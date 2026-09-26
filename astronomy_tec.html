@@ -1,0 +1,2599 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>ASTRONOMY TEC</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.ic{width:1em;height:1em;vertical-align:-0.15em;display:inline-block;flex-shrink:0}
+#siteBg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:transparent}
+#siteBg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#siteBgOverlay{position:absolute;inset:0;background:rgba(3,7,17,.68)}
+
+.cs-card{
+margin-top:22px;padding:18px;border:1px solid #294667;border-radius:18px;
+background:linear-gradient(135deg,#102441,#071120);
+display:flex;align-items:center;gap:14px;flex-wrap:wrap
+}
+.cs-avatar{
+width:52px;height:52px;object-fit:cover;border-radius:50%;
+border:2px solid #4fb8ff;flex-shrink:0;
+pointer-events:none;-webkit-touch-callout:none;
+-webkit-user-drag:none;user-select:none
+}
+.cs-info{flex:1;min-width:150px}
+.cs-info h4{font-size:13px;display:flex;align-items:center;gap:6px}
+.cs-online{
+display:inline-block;width:8px;height:8px;border-radius:50%;
+background:#3ddc97;box-shadow:0 0 6px #3ddc97
+}
+.cs-info p{margin-top:4px;color:var(--muted);font-size:10px}
+
+.chat-log{
+display:flex;flex-direction:column;gap:9px;max-height:340px;
+overflow-y:auto;padding:5px 2px 10px
+}
+.chat-msg{max-width:80%;padding:10px 12px;border-radius:13px;font-size:11px;line-height:1.6}
+.chat-msg.bot{
+align-self:flex-start;background:#0d1e36;border:1px solid #234166;color:#dbe7fa
+}
+.chat-msg.user{
+align-self:flex-end;background:linear-gradient(135deg,#2468d9,#3857c7);color:#fff
+}
+.chat-quick{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.chat-quick button{
+padding:8px 12px;border:1px solid #294667;border-radius:20px;
+background:#0c1b31;color:#bcd4ff;font-size:10px
+}
+.chat-quick button:hover{background:#17345a}
+.chat-input-row{display:flex;gap:8px;margin-top:14px}
+.chat-input-row input{flex:1}
+.chat-input-row button{
+border:0;border-radius:11px;padding:0 14px;
+background:linear-gradient(135deg,#2468d9,#3857c7);color:#fff
+}
+.cs-wa-btn{
+display:inline-flex;align-items:center;gap:7px;margin-top:8px;
+padding:9px 13px;border-radius:11px;border:1px solid #2c7569;
+background:#102d29;color:#76e0ce;font-size:10px;text-decoration:none
+}
+
+.cs-form{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.cs-form select,.cs-form textarea,.cs-form input{font-size:11px;padding:9px}
+.cs-form textarea{min-height:60px}
+.cs-form img,.cs-form video{max-width:100%;border-radius:10px;margin-top:6px}
+
+.cs-icon-btn{
+position:relative;width:38px;height:38px;flex-shrink:0;border-radius:50%;
+border:1px solid #294667;background:#0c1b31;color:#bcd4ff;
+display:flex;align-items:center;justify-content:center
+}
+.cs-icon-btn:hover{background:#17345a}
+.cs-icon-btn.recording{
+background:#3c1414;border-color:#a4404a;color:#ff9bad
+}
+.cs-wave{display:none;align-items:center;gap:2px;height:14px}
+.cs-wave span{
+width:2.5px;height:100%;border-radius:2px;background:#ff9bad;
+animation:csWave 0.9s ease-in-out infinite
+}
+.cs-wave span:nth-child(2){animation-delay:.15s}
+.cs-wave span:nth-child(3){animation-delay:.3s}
+.cs-wave span:nth-child(4){animation-delay:.45s}
+@keyframes csWave{
+0%,100%{transform:scaleY(.3)}
+50%{transform:scaleY(1)}
+}
+.chat-msg img,.chat-msg video{max-width:100%;border-radius:10px;display:block}
+.chat-msg audio{width:100%;margin-top:2px}
+:root{
+--bg:#030711;--panel:#091527;--panel2:#0d1c31;
+--border:#213a59;--text:#f5f9ff;--muted:#8198b8;
+--blue:#59caff;--gold:#ffd66b
+}
+html{scroll-behavior:smooth}
+body{
+min-height:100vh;padding-left:225px;padding-bottom:20px;
+background:radial-gradient(circle at 50% -10%,#163d6d,#071120 35%,#030711 75%);
+color:var(--text);font-family:Arial,Helvetica,sans-serif
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+img{max-width:100%}
+
+#loading{
+position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;
+align-items:center;justify-content:center;background:#02060e;transition:.6s
+}
+#loading.hide{opacity:0;visibility:hidden;pointer-events:none}
+.loading-logo{
+width:120px;height:120px;object-fit:contain;border-radius:25px;
+box-shadow:0 0 35px #48caff55
+}
+.loading-title{margin-top:18px;font-size:24px;font-weight:bold;letter-spacing:3px}
+.loading-sub{margin-top:8px;color:var(--muted);font-size:10px;text-align:center}
+.loading-wm{
+margin-top:14px;color:#4fb8ff;font-size:10px;font-weight:700;
+letter-spacing:1.4px;text-align:center;text-shadow:0 0 10px #4fb8ff55
+}
+.loading-bar{
+width:230px;height:6px;margin-top:25px;overflow:hidden;border-radius:20px;background:#15243a
+}
+.loading-bar div{
+width:0;height:100%;background:linear-gradient(90deg,#3477ff,#5edbff);
+animation:load 2.5s forwards
+}
+@keyframes load{to{width:100%}}
+
+#loginScreen{
+position:fixed;inset:0;z-index:8000;display:none;align-items:center;
+justify-content:center;padding:20px;overflow:auto;background:#02060eee
+}
+.login-box{
+width:min(440px,100%);padding:25px;border:1px solid #294667;
+border-radius:25px;background:#091527;box-shadow:0 20px 80px #000
+}
+.login-logo{
+display:block;width:90px;height:90px;margin:auto;object-fit:contain;border-radius:22px
+}
+.login-box h1{margin-top:16px;text-align:center;font-size:22px}
+.login-box p{margin:8px 0 20px;color:var(--muted);font-size:11px;line-height:1.6;text-align:center}
+
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:13px}
+.field label{color:#8ca2c0;font-size:10px}
+input,select,textarea{
+width:100%;padding:11px;outline:none;border:1px solid #294667;
+border-radius:11px;background:#071120;color:white
+}
+textarea{min-height:90px;resize:vertical}
+
+.file-box{
+padding:15px;border:1px dashed #315b86;border-radius:15px;
+background:#071120;text-align:center
+}
+.file-preview{
+display:block;width:90px;height:90px;margin:0 auto 10px;object-fit:cover;
+border-radius:22px;background:#122642
+}
+
+.btn{
+padding:11px 14px;border:1px solid #294667;border-radius:11px;
+background:#0c1b31;color:white
+}
+.btn:hover{background:#17345a}
+.btn.primary{border:0;background:linear-gradient(135deg,#2468d9,#3857c7)}
+.btn.danger{border-color:#713647;color:#ff9bad}
+
+.desktop-nav{
+position:fixed;z-index:400;top:0;bottom:0;left:0;width:225px;padding:20px 13px;
+border-right:1px solid #203756;background:#06101fee
+}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:25px}
+.logo-image{width:43px;height:43px;object-fit:cover;border-radius:13px}
+.logo b{font-size:13px}
+.logo small{display:block;margin-top:3px;color:#7890b2;font-size:8px}
+.desktop-menu button{
+width:100%;margin:3px 0;padding:12px;border:0;border-radius:12px;
+background:transparent;color:#91a7c8;text-align:left
+}
+.desktop-menu button:hover,.desktop-menu button.active{
+background:#142a48;color:white
+}
+.desktop-menu span{display:inline-block;width:30px}
+.sidebar-footer{
+position:absolute;right:18px;bottom:18px;left:18px;
+color:#607596;font-size:8px;line-height:1.7
+}
+
+main{max-width:1250px;margin:auto;padding:20px}
+.topbar{
+display:flex;align-items:flex-start;justify-content:space-between;
+gap:15px;margin-bottom:8px
+}
+.topbar h2{font-size:21px}
+.topbar p{margin-top:5px;color:var(--muted);font-size:10px}
+.user{
+display:flex;align-items:center;gap:8px;padding:6px 10px;
+border:1px solid #213957;border-radius:14px;background:#0b182b;font-size:10px
+}
+.avatar{
+width:34px;height:34px;object-fit:cover;border-radius:50%;background:#172d4c
+}
+.page{display:none}
+.page.active{display:block}
+
+.member-status{
+display:flex;align-items:center;gap:7px;margin:0 0 18px;flex-wrap:wrap
+}
+.premium-badge{
+display:inline-flex;align-items:center;gap:6px;padding:7px 11px;
+border-radius:10px;background:linear-gradient(135deg,#362708,#6a4a08);
+border:1px solid #c49428;color:#ffd86a;font-size:10px;font-weight:bold
+}
+.vip-badge{
+display:inline-flex;align-items:center;gap:5px;padding:7px 10px;
+border-radius:10px;background:#171d2d;border:1px solid #3a4c70;
+color:#bcd4ff;font-size:10px;font-weight:bold
+}
+.verified{
+width:24px;height:24px;object-fit:contain;vertical-align:middle;margin-left:4px
+}
+.verified.big{width:28px;height:28px}
+
+.hero{
+position:relative;overflow:hidden;padding:25px;border:1px solid #294667;
+border-radius:23px;background:radial-gradient(circle at 90% 10%,#19477a55,transparent 35%),
+linear-gradient(135deg,#102441,#071120)
+}
+.hero small{color:#82a1c8;letter-spacing:2px}
+.hero h1{margin:10px 0;font-size:29px}
+.hero h1 span{color:#5ccfff}
+.rank{
+display:inline-block;padding:9px 13px;border:1px solid #315d8d;
+border-radius:11px;background:#173258;font-size:10px
+}
+.rank b{color:#6fd5ff}
+.progress{margin-top:20px}
+.progress-info{
+display:flex;justify-content:space-between;margin-bottom:7px;
+color:#8499b9;font-size:10px
+}
+.progress-bar{height:8px;overflow:hidden;border-radius:20px;background:#172640}
+.progress-fill{
+width:0;height:100%;background:linear-gradient(90deg,#4d78ff,#61d7ff)
+}
+
+.grid{
+display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:14px
+}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+.card,.panel,.achievement{
+padding:17px;border:1px solid var(--border);
+border-radius:17px;background:var(--panel)
+}
+.card-icon{font-size:23px}
+.number{margin-top:9px;font-size:24px;font-weight:bold}
+.label{margin-top:4px;color:var(--muted);font-size:10px}
+.section{margin-top:22px}
+.section-title{
+display:flex;align-items:center;justify-content:space-between;
+gap:10px;margin-bottom:11px
+}
+.section-title h3{font-size:16px}
+.section-title span{color:#55c9ff;font-size:10px}
+
+.ranks{
+display:grid;grid-template-columns:repeat(7,1fr);gap:8px
+}
+.rank-card{
+min-height:105px;padding:13px 9px;border:1px solid var(--border);
+border-radius:13px;background:var(--panel)
+}
+.rank-card.current{
+border-color:#58c7ff;box-shadow:0 0 20px #58c7ff20
+}
+.rank-card.locked{opacity:.4}
+.rank-number{color:#58c7ff;font-size:9px}
+.rank-card h4{margin-top:8px;font-size:11px}
+.rank-card p{margin-top:5px;color:var(--muted);font-size:9px}
+
+.achievement{min-height:150px}
+.badge{
+display:grid;width:52px;height:52px;margin-bottom:10px;place-items:center;
+border-radius:15px;background:#152b4a;font-size:25px
+}
+.achievement h4{font-size:13px}
+.achievement p{
+margin-top:5px;color:var(--muted);font-size:10px;line-height:1.5
+}
+
+.exam{
+display:flex;align-items:center;justify-content:space-between;
+gap:15px;margin-bottom:10px;padding:16px;
+border:1px solid var(--border);border-radius:15px;background:var(--panel)
+}
+.exam h4{font-size:13px}
+.exam p{margin-top:5px;color:var(--muted);font-size:10px}
+.exam.locked{opacity:.45}
+
+.cover{
+height:170px;margin-bottom:-45px;border-radius:17px;
+background-position:center;background-size:cover
+}
+.profile-head{padding:0 18px 18px}
+.big-avatar{
+width:90px;height:90px;object-fit:cover;border:4px solid var(--panel);
+border-radius:25px;background:#173052
+}
+.profile-head h2{margin-top:8px}
+.muted{margin-top:5px;color:var(--muted);font-size:11px}
+
+.settings-section{margin-bottom:18px}
+.settings-title{margin-bottom:10px;color:#d9e9ff;font-size:13px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.full{grid-column:1/-1}
+.master-box{
+margin-top:35px;border-color:#684e25;
+background:linear-gradient(135deg,#171309,#0a101b)
+}
+.master-title{color:var(--gold);font-weight:bold}
+.master-badge{
+display:inline-flex;align-items:center;gap:7px;padding:8px 11px;
+border:1px solid #735522;border-radius:10px;
+background:#3c2b0c;color:#ffd66d;font-size:10px
+}
+
+.premium-box{
+margin-top:18px;padding:20px;border:1px solid #806226;
+border-radius:18px;background:linear-gradient(135deg,#1b1609,#0a111e)
+}
+.premium-price{
+font-size:25px;font-weight:bold;color:#ffd66b;margin:10px 0
+}
+.premium-list{
+margin:12px 0 18px;color:#aebed5;font-size:10px;line-height:2
+}
+.premium-active{
+padding:12px;border-radius:12px;background:#102d29;
+border:1px solid #2c7569;color:#76e0ce;font-size:11px
+}
+
+.mading-intro{
+padding:20px;border:1px solid #294667;border-radius:18px;
+background:linear-gradient(135deg,#102441,#071120);margin-bottom:15px
+}
+.mading-intro h2{font-size:22px}
+.mading-intro p{
+margin-top:7px;color:var(--muted);font-size:11px;line-height:1.6
+}
+.poster-grid{
+display:grid;grid-template-columns:repeat(3,1fr);gap:15px
+}
+.poster{
+overflow:hidden;border:1px solid #294667;border-radius:18px;
+background:#091527
+}
+.poster img{
+display:block;width:100%;height:270px;object-fit:cover
+}
+.poster-info{padding:13px}
+.poster-info h3{font-size:13px}
+.poster-info p{margin-top:5px;color:var(--muted);font-size:9px}
+
+.certificate-box{padding:45px;text-align:center}
+
+.modal{
+position:fixed;inset:0;z-index:900;display:none;align-items:center;
+justify-content:center;padding:15px;background:#000c
+}
+.modal.show{display:flex}
+.modal-box{
+width:min(760px,100%);max-height:90vh;overflow:auto;padding:20px;
+border:1px solid #2c4d76;border-radius:20px;background:#091426
+}
+.question{
+margin-bottom:12px;padding:15px;border:1px solid #203957;
+border-radius:14px;background:#0d1b30
+}
+.question h4{font-size:12px;line-height:1.5}
+.options{display:grid;gap:7px;margin-top:10px}
+.options label{
+padding:9px;border:1px solid #203958;border-radius:9px;
+background:#081323;font-size:10px;cursor:pointer
+}
+.options label:hover{background:#122747}
+.result{padding:25px;text-align:center}
+.score{color:#5ccfff;font-size:48px;font-weight:900}
+
+.course-card{
+padding:18px;border:1px solid var(--border);
+border-radius:17px;background:var(--panel)
+}
+.course-icon{
+display:grid;width:65px;height:65px;place-items:center;
+border-radius:18px;background:#142f52;font-size:36px;margin-bottom:15px
+}
+.course-card h4{font-size:14px}
+.course-card p{
+margin-top:6px;color:var(--muted);font-size:10px;line-height:1.6
+}
+
+.lesson-image{
+display:block;width:100%;max-height:420px;object-fit:cover;
+border-radius:15px;margin:15px 0
+}
+.lesson-text{
+color:#c9d8ec;font-size:12px;line-height:1.8;white-space:pre-line
+}
+
+.bottom-nav{
+position:fixed;z-index:500;right:0;bottom:0;left:0;
+display:none;grid-template-columns:repeat(5,1fr);height:70px;
+border-top:1px solid #213957;background:#06101fee;
+backdrop-filter:blur(18px)
+}
+.bottom-nav button{
+border:0;background:transparent;color:#7188a8;font-size:8px
+}
+.bottom-nav button div{margin-bottom:3px;font-size:19px}
+.bottom-nav button.active{color:#62d3ff}
+
+.toast{
+position:fixed;z-index:2000;right:18px;bottom:85px;display:none;
+padding:12px 15px;border:1px solid #315a86;border-radius:12px;
+background:#10223b;font-size:11px
+}
+.toast.show{display:block}
+
+footer{
+padding:30px 0 10px;color:#607596;font-size:10px;
+line-height:1.7;text-align:center
+}
+
+@media(max-width:800px){
+body{padding:0 0 75px}
+.desktop-nav{display:none}
+main{padding:14px}
+.bottom-nav{display:grid}
+.grid{grid-template-columns:repeat(2,1fr)}
+.grid3{grid-template-columns:1fr}
+.ranks{display:flex;overflow-x:auto}
+.rank-card{min-width:125px}
+.form-grid{grid-template-columns:1fr}
+.full{grid-column:auto}
+.hero h1{font-size:23px}
+.topbar h2{font-size:18px}
+.user span{display:none}
+.poster-grid{grid-template-columns:1fr}
+.poster img{height:auto;max-height:500px}
+}
+@media(max-width:450px){
+.grid{grid-template-columns:1fr 1fr}
+.card{padding:13px}
+.number{font-size:20px}
+.exam{flex-direction:column;align-items:flex-start}
+.exam .btn{width:100%}
+}
+</style>
+</head>
+
+<body>
+
+<div id="siteBg" aria-hidden="true">
+<img id="siteBgImage" style="display:none">
+<div id="siteBgOverlay" style="display:none"></div>
+</div>
+
+<div id="loading">
+<img class="loading-logo" src="https://files.catbox.moe/7fgnm9.jpg">
+<div class="loading-title">ASTRONOMY TEC</div>
+<div class="loading-sub">Astronomy • Astrophysics • Coding • Informatics</div>
+<div class="loading-wm">FROM ZIURIXY X HANZZY CODING</div>
+<div class="loading-bar"><div></div></div>
+</div>
+
+<div id="loginScreen">
+<div class="login-box">
+<img class="login-logo" src="https://files.catbox.moe/7fgnm9.jpg">
+<h1>Selamat Datang di Astronomy TEC</h1>
+<p>Masukkan nama dan foto profil untuk masuk community.</p>
+
+<div class="field">
+<label>NAMA</label>
+<input id="firstName" type="text" placeholder="Masukkan nama kamu">
+</div>
+
+<div class="file-box">
+<img class="file-preview" id="firstPreview">
+<strong style="font-size:11px">Foto Profil</strong>
+<p style="margin:7px 0;font-size:9px">Pilih JPG, PNG, WEBP atau gambar lainnya</p>
+<input type="file" id="firstAvatar" accept="image/*">
+</div>
+
+<button class="btn primary" style="width:100%;margin-top:15px"
+onclick="finishFirstLogin()"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M14 3c3 1 5.5 3.5 6.5 6.5-3.5 1-7 3-9.5 5.5L7 12c2.5-2.5 4.5-6 7-9Z'/><circle cx='15' cy='9' r='1.2'/><path d='M9.5 15 6 18.5M7 13l-3 1 1-3M11 17l-1 3-3 1'/></svg> Masuk Astronomy TEC</button>
+</div>
+</div>
+
+<aside class="desktop-nav">
+<div class="logo">
+<img class="logo-image" src="https://files.catbox.moe/7fgnm9.jpg">
+<div><b>ASTRONOMY TEC</b><small>Virtual Community</small></div>
+</div>
+
+<div class="desktop-menu">
+<button data-page="home" class="active"><span><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3 11l9-7 9 7'/><path d='M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9'/></svg></span>Utama</button>
+<button data-page="mading"><span><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='5' width='14' height='14' rx='1'/><path d='M17 8h3a1 1 0 0 1 1 1v9a2 2 0 0 1-2 2H6'/><path d='M7 9h6M7 12h6M7 15h4'/></svg></span>Mading</button>
+<button data-page="academy"><span><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4 5.5A2.5 2.5 0 0 1 6.5 3H12v18H6.5A2.5 2.5 0 0 1 4 18.5v-13Z'/><path d='M12 3h5.5A2.5 2.5 0 0 1 20 5.5v13a2.5 2.5 0 0 1-2.5 2.5H12'/></svg></span>Academy</button>
+<button data-page="exam"><span><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4 17.5V20h2.5L18 8.5 15.5 6 4 17.5Z'/><path d='M13.5 7.5 16.5 10.5'/></svg></span>Ujian</button>
+<button data-page="achievement"><span><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M7 4h10v4a5 5 0 0 1-10 0V4Z'/><path d='M7 5H4a1 1 0 0 0-1 1c0 2.5 1.8 4 3.5 4'/><path d='M17 5h3a1 1 0 0 1 1 1c0 2.5-1.8 4-3.5 4'/><path d='M10 15v2h4v-2'/><path d='M8 21h8'/><path d='M12 17v4'/></svg></span>Pencapaian</button>
+<button data-page="certificate"><span><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><rect x='4' y='3' width='16' height='14' rx='2'/><path d='M8 8h8M8 11h8M8 14h5'/><path d='M9 21l3-2 3 2v-4H9v4Z'/></svg></span>Sertifikat</button>
+<button data-page="profile"><span><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='3.3'/><path d='M5 20c0-3.5 3-6 7-6s7 2.5 7 6'/></svg></span>Profil</button>
+<button data-page="premium"><span><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M6 3h12l3 5-9 13L3 8l3-5Z'/><path d='M3 8h18M9 3l-2 5 5 13 5-13-2-5'/></svg></span>Premium</button>
+<button data-page="settings"><span><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'/><path d='M19.4 13.5a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H2.5a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H8.7a1.7 1.7 0 0 0 1-1.6V2.5a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.6 1h.2a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1Z'/></svg></span>Pengaturan</button>
+<button id="desktopMaster" data-page="master" style="display:none">
+<span><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3 8l4 3 5-6 5 6 4-3-2 10H5L3 8Z'/><path d='M5 21h14'/></svg></span>Master
+</button>
+</div>
+
+<div class="sidebar-footer">
+ASTRONOMY<br>
+ASTROPHYSICS<br>
+CODING<br>
+INFORMATICS<br><br>
+From <b style="color:#8bd6ff">ZIURIXY × HANZZY CODING</b>
+</div>
+</aside>
+
+<main>
+
+<div class="topbar">
+<div>
+<h2 id="pageTitle">Dashboard Pencapaian</h2>
+<p id="pageSubtitle">Perjalanan belajar Astronomy TEC kamu</p>
+</div>
+
+<div class="user">
+<img class="avatar" id="topAvatar">
+<span id="topName">ABHIZAN</span>
+<img id="topVerified" class="verified" style="display:none"
+src="https://files.catbox.moe/yl9zup.png">
+</div>
+</div>
+
+<div class="member-status" id="memberStatus"></div>
+
+<section id="home" class="page active">
+<div class="hero">
+<small>DASHBOARD PENCAPAIAN</small>
+<h1>Welcome, <span id="welcomeName">ABHIZAN</span> <svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M8 13V6a1.5 1.5 0 0 1 3 0v6M11 12V4.5a1.5 1.5 0 0 1 3 0V12M14 12V6a1.5 1.5 0 0 1 3 0v8'/><path d='M17 12v2a5 5 0 0 1-5 5h-1a6 6 0 0 1-5-3l-2.5-4a1.3 1.3 0 0 1 2.2-1.3L7 13'/></svg></h1>
+<div class="rank">RANK <b id="heroRank">1 — EXPLORER</b></div>
+
+<div class="progress">
+<div class="progress-info">
+<span id="progressText">Progress menuju Rank 2</span>
+<span id="progressPercent">0%</span>
+</div>
+<div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+</div>
+</div>
+
+<div class="grid">
+<div class="card"><div class="card-icon"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M7 4h10v4a5 5 0 0 1-10 0V4Z'/><path d='M7 5H4a1 1 0 0 0-1 1c0 2.5 1.8 4 3.5 4'/><path d='M17 5h3a1 1 0 0 1 1 1c0 2.5-1.8 4-3.5 4'/><path d='M10 15v2h4v-2'/><path d='M8 21h8'/><path d='M12 17v4'/></svg></div><div class="number" id="statAchievement">0</div><div class="label">Achievement</div></div>
+<div class="card"><div class="card-icon"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4 17.5V20h2.5L18 8.5 15.5 6 4 17.5Z'/><path d='M13.5 7.5 16.5 10.5'/></svg></div><div class="number" id="statExam">0</div><div class="label">Ujian Lulus</div></div>
+<div class="card"><div class="card-icon"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6-4.5-4.2 6.1-.7L12 3Z'/></svg></div><div class="number" id="statAverage">0</div><div class="label">Nilai Rata-rata</div></div>
+<div class="card"><div class="card-icon"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18'/></svg></div><div class="number" id="statXP">0</div><div class="label">XP</div></div>
+</div>
+
+<div class="section">
+<div class="section-title"><h3><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M7 4h10v4a5 5 0 0 1-10 0V4Z'/><path d='M7 5H4a1 1 0 0 0-1 1c0 2.5 1.8 4 3.5 4'/><path d='M17 5h3a1 1 0 0 1 1 1c0 2.5-1.8 4-3.5 4'/><path d='M10 15v2h4v-2'/><path d='M8 21h8'/><path d='M12 17v4'/></svg> Pencapaian Terbaru</h3><span>Progress kamu</span></div>
+<div class="grid3" id="homeAchievement"></div>
+</div>
+
+<div class="section">
+<div class="section-title"><h3><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M14 3c3 1 5.5 3.5 6.5 6.5-3.5 1-7 3-9.5 5.5L7 12c2.5-2.5 4.5-6 7-9Z'/><circle cx='15' cy='9' r='1.2'/><path d='M9.5 15 6 18.5M7 13l-3 1 1-3M11 17l-1 3-3 1'/></svg> Rank Astronomy TEC</h3><span>Naik melalui ujian</span></div>
+<div class="ranks" id="rankList"></div>
+</div>
+
+<div class="cs-card">
+<img class="cs-avatar" src="https://files.catbox.moe/ztw9wy.png">
+<div class="cs-info">
+<h4>Ziurixy Official <span class="cs-online"></span></h4>
+<p>Customer Service Astronomy TEC • Chatbot otomatis, siap bantu 24 jam</p>
+</div>
+<button class="btn primary" onclick="openCS()">
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M4 5h16v11H8l-4 4V5Z'/></svg>
+Chat CS
+</button>
+</div>
+</section>
+
+<section id="mading" class="page">
+<div class="mading-intro">
+<h2><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='5' width='14' height='14' rx='1'/><path d='M17 8h3a1 1 0 0 1 1 1v9a2 2 0 0 1-2 2H6'/><path d='M7 9h6M7 12h6M7 15h4'/></svg> Mading Astronomy TEC</h2>
+<p>Pusat informasi visual Astronomy TEC.</p>
+</div>
+
+<div class="poster-grid">
+<div class="poster">
+<img src="https://files.catbox.moe/r3cew3.png">
+<div class="poster-info"><h3><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='2'/><ellipse cx='12' cy='12' rx='10' ry='4' transform='rotate(20 12 12)'/><ellipse cx='12' cy='12' rx='10' ry='4' transform='rotate(-20 12 12)'/></svg> Poster Astronomy TEC</h3><p>Informasi dan publikasi Astronomy TEC.</p></div>
+</div>
+<div class="poster">
+<img src="https://files.catbox.moe/r3cew3.png">
+<div class="poster-info"><h3><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M3 15.5 16 9l1.5 3-13 6.5-1.5-3Z'/><path d='M14.5 8 20 5.5 21 8l-5.5 2.5'/><path d='M8 17l-2 4M11 15.5l-1.5 4.5'/><circle cx='17.5' cy='6.5' r='1'/></svg> Astronomy Community</h3><p>Poster kegiatan dan informasi community.</p></div>
+</div>
+<div class="poster">
+<img src="https://files.catbox.moe/r3cew3.png">
+<div class="poster-info"><h3><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M14 3c3 1 5.5 3.5 6.5 6.5-3.5 1-7 3-9.5 5.5L7 12c2.5-2.5 4.5-6 7-9Z'/><circle cx='15' cy='9' r='1.2'/><path d='M9.5 15 6 18.5M7 13l-3 1 1-3M11 17l-1 3-3 1'/></svg> Astronomy TEC</h3><p>Astronomy • Astrophysics • Coding • Informatics.</p></div>
+</div>
+</div>
+</section>
+
+<section id="academy" class="page">
+<div class="panel">
+<div class="section-title">
+<h3><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4 5.5A2.5 2.5 0 0 1 6.5 3H12v18H6.5A2.5 2.5 0 0 1 4 18.5v-13Z'/><path d='M12 3h5.5A2.5 2.5 0 0 1 20 5.5v13a2.5 2.5 0 0 1-2.5 2.5H12'/></svg> Astronomy TEC Academy</h3>
+<span>Virtual Learning</span>
+</div>
+<div class="grid3" id="courses"></div>
+</div>
+</section>
+
+<section id="exam" class="page">
+<div class="panel">
+<div class="section-title">
+<h3><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4 17.5V20h2.5L18 8.5 15.5 6 4 17.5Z'/><path d='M13.5 7.5 16.5 10.5'/></svg> Ujian Kenaikan Rank</h3>
+<span>Rank 1 → Rank 2</span>
+</div>
+<div id="examList"></div>
+</div>
+</section>
+
+<section id="achievement" class="page">
+<div class="panel">
+<div class="section-title">
+<h3><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M7 4h10v4a5 5 0 0 1-10 0V4Z'/><path d='M7 5H4a1 1 0 0 0-1 1c0 2.5 1.8 4 3.5 4'/><path d='M17 5h3a1 1 0 0 1 1 1c0 2.5-1.8 4-3.5 4'/><path d='M10 15v2h4v-2'/><path d='M8 21h8'/><path d='M12 17v4'/></svg> Pencapaian</h3>
+<span id="achievementCount">0 / 12</span>
+</div>
+<div class="grid3" id="achievementList"></div>
+</div>
+</section>
+
+<section id="certificate" class="page">
+<div class="panel">
+<div class="section-title"><h3><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><rect x='4' y='3' width='16' height='14' rx='2'/><path d='M8 8h8M8 11h8M8 14h5'/><path d='M9 21l3-2 3 2v-4H9v4Z'/></svg> Sertifikat</h3><span>ASTRONOMY TEC</span></div>
+<div class="certificate-box">
+<div style="font-size:50px"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='2'/><ellipse cx='12' cy='12' rx='10' ry='4' transform='rotate(20 12 12)'/><ellipse cx='12' cy='12' rx='10' ry='4' transform='rotate(-20 12 12)'/></svg></div>
+<h2 style="margin-top:12px">Belum Ada Sertifikat</h2>
+<p class="muted">Lulus ujian kenaikan rank untuk membuka pencapaian sertifikat.</p>
+</div>
+</div>
+</section>
+
+<section id="profile" class="page">
+<div class="panel">
+<div class="cover" id="profileCover"></div>
+<div class="profile-head">
+<img class="big-avatar" id="bigAvatar">
+<h2>
+<span id="profileName">ABHIZAN</span>
+<img id="profileVerified" class="verified big" style="display:none"
+src="https://files.catbox.moe/yl9zup.png">
+</h2>
+<p class="muted" id="profileUsername">@member</p>
+<p class="muted" id="profileRank">Rank 1 — Explorer</p>
+<p class="muted" id="profileBio">Member Astronomy TEC</p>
+</div>
+
+<div class="grid">
+<div class="card"><div class="number" id="profileRankNumber">1</div><div class="label">Rank</div></div>
+<div class="card"><div class="number" id="profileXP">0</div><div class="label">XP</div></div>
+<div class="card"><div class="number" id="profileExam">0</div><div class="label">Ujian Lulus</div></div>
+<div class="card"><div class="number" id="profileAchievement">0</div><div class="label">Achievement</div></div>
+</div>
+
+<div class="cs-card">
+<img class="cs-avatar" src="https://files.catbox.moe/ztw9wy.png">
+<div class="cs-info">
+<h4>Ziurixy Official <span class="cs-online"></span></h4>
+<p>Customer Service Astronomy TEC • Chatbot otomatis, siap bantu 24 jam</p>
+</div>
+<button class="btn primary" onclick="openCS()">
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M4 5h16v11H8l-4 4V5Z'/></svg>
+Chat CS
+</button>
+</div>
+</div>
+</section>
+
+<section id="premium" class="page">
+<div class="panel">
+<div class="section-title">
+<h3><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M6 3h12l3 5-9 13L3 8l3-5Z'/><path d='M3 8h18M9 3l-2 5 5 13 5-13-2-5'/></svg> Premium Astronomy TEC</h3>
+<span>Premium Member</span>
+</div>
+
+<div class="premium-box">
+<div style="font-size:35px"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M6 3h12l3 5-9 13L3 8l3-5Z'/><path d='M3 8h18M9 3l-2 5 5 13 5-13-2-5'/></svg></div>
+<h2 style="margin-top:10px">Astronomy TEC Premium</h2>
+
+<div class="premium-price">Rp 4.999 / bulan</div>
+
+<div class="premium-list">
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 12l5 5L20 6'/></svg> Badge Premium Member<br>
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 12l5 5L20 6'/></svg> Badge VIP<br>
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 12l5 5L20 6'/></svg> Centang biru pada profil<br>
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 12l5 5L20 6'/></svg> Akses fitur Premium<br>
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 12l5 5L20 6'/></svg> Status khusus member Premium
+</div>
+
+<div id="premiumStatus"></div>
+
+<button class="btn primary" style="width:100%;margin-top:15px"
+onclick="showPremiumPayment()"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M6 3h12l3 5-9 13L3 8l3-5Z'/><path d='M3 8h18M9 3l-2 5 5 13 5-13-2-5'/></svg> Aktifkan Premium</button>
+</div>
+</div>
+</section>
+
+<section id="settings" class="page">
+<div class="panel">
+<div class="section-title">
+<h3><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'/><path d='M19.4 13.5a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H2.5a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H8.7a1.7 1.7 0 0 0 1-1.6V2.5a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.6 1h.2a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1Z'/></svg> Pengaturan</h3>
+<span>Profile & App</span>
+</div>
+
+<div class="settings-section">
+<div class="settings-title"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='3.3'/><path d='M5 20c0-3.5 3-6 7-6s7 2.5 7 6'/></svg> Profil</div>
+<div class="form-grid">
+<div class="field">
+<label>NAMA</label>
+<input id="setName" placeholder="Nama">
+</div>
+<div class="field">
+<label>USERNAME</label>
+<input id="setUsername" placeholder="@username">
+</div>
+<div class="field full">
+<label>BIO</label>
+<textarea id="setBio" placeholder="Tentang kamu"></textarea>
+</div>
+</div>
+</div>
+
+<div class="settings-section">
+<div class="settings-title"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='16' rx='1.5'/><circle cx='8.5' cy='9.5' r='1.5'/><path d='M4 17l5-5 3 3 4-4 4 4'/></svg> Foto Profil</div>
+<div class="file-box">
+<img class="file-preview" id="settingsAvatarPreview">
+<input type="file" id="settingsAvatar" accept="image/*">
+</div>
+</div>
+
+<div class="settings-section">
+<div class="settings-title"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='2'/><ellipse cx='12' cy='12' rx='10' ry='4' transform='rotate(20 12 12)'/><ellipse cx='12' cy='12' rx='10' ry='4' transform='rotate(-20 12 12)'/></svg> Background Website</div>
+<div class="file-box">
+<img class="file-preview" id="settingsCoverPreview">
+<strong style="font-size:11px">Foto</strong>
+<p style="margin:7px 0;font-size:9px">Pilih foto untuk background seluruh website</p>
+<input type="file" id="settingsCover" accept="image/*">
+<button class="btn danger" id="removeCoverBtn" style="width:100%;margin-top:10px;display:none" onclick="removeSiteBackground()">
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 5l14 14M19 5 5 19'/></svg>
+Hapus Background
+</button>
+</div>
+</div>
+
+<div class="settings-section">
+<div class="settings-title"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='9'/><path d='M3 12h18M12 3c2.5 2.5 4 6 4 9s-1.5 6.5-4 9c-2.5-2.5-4-6-4-9s1.5-6.5 4-9Z'/></svg> Bahasa</div>
+<select id="setLanguage">
+<option value="id">Bahasa Indonesia</option>
+<option value="en">English</option>
+</select>
+</div>
+
+<div class="settings-section">
+<div class="settings-title"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3a9 9 0 1 0 0 18c1.2 0 1.5-.8 1.5-1.5s-.3-1-.3-1.7c0-.9.7-1.3 1.5-1.3H16a4 4 0 0 0 4-4C20 6.8 16.4 3 12 3Z'/><circle cx='7.5' cy='10.5' r='1'/><circle cx='11' cy='7.5' r='1'/><circle cx='15' cy='8' r='1'/></svg> Tema</div>
+<select id="setTheme">
+<option value="dark">Dark Space</option>
+<option value="blue">Deep Blue</option>
+</select>
+</div>
+
+<div class="settings-section">
+<div class="settings-title"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M6 10a6 6 0 1 1 12 0c0 3 1 4.5 2 6H4c1-1.5 2-3 2-6Z'/><path d='M10 20a2 2 0 0 0 4 0'/></svg> Notifikasi</div>
+<select id="setNotification">
+<option value="on">Aktif</option>
+<option value="off">Nonaktif</option>
+</select>
+</div>
+
+<div class="settings-section">
+<div class="settings-title"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18'/></svg> Animasi</div>
+<select id="setAnimation">
+<option value="on">Aktif</option>
+<option value="off">Nonaktif</option>
+</select>
+</div>
+
+<button class="btn primary" style="width:100%" onclick="saveSettings()">
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M5 3h11l3 3v15H5V3Z'/><path d='M8 3v6h8V3M8 21v-7h8v7'/></svg> Simpan Pengaturan
+</button>
+
+<div class="panel master-box">
+<div class="master-title"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3 8l4 3 5-6 5 6 4-3-2 10H5L3 8Z'/><path d='M5 21h14'/></svg> OWNER / MASTER ACCESS</div>
+<p class="muted">Masukkan kode jika Anda Owner / Master Astronomy TEC.</p>
+
+<div class="field" style="margin-top:14px">
+<label>KODE OWNER / MASTER</label>
+<input type="password" id="masterCode" placeholder="Masukkan kode akses">
+</div>
+
+<button class="btn" style="width:100%" onclick="unlockMaster()">
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><circle cx='8' cy='15' r='3'/><path d='M10.5 12.5 19 4M16 7l2 2M13 10l2 2'/></svg> Verifikasi Master
+</button>
+</div>
+
+<div class="panel" style="margin-top:15px">
+<div class="settings-title"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M12 4 3 20h18L12 4Z'/><path d='M12 10v4'/><circle cx='12' cy='17' r='0.6' fill='currentColor' stroke='none'/></svg> Data Browser</div>
+<p class="muted">Data demo tersimpan di browser menggunakan localStorage.</p>
+<button class="btn danger" style="margin-top:12px" onclick="resetData()">
+Hapus Semua Data
+</button>
+</div>
+</div>
+</section>
+
+<section id="master" class="page">
+<div class="panel">
+<div class="section-title">
+<h3><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3 8l4 3 5-6 5 6 4-3-2 10H5L3 8Z'/><path d='M5 21h14'/></svg> Master Astronomy TEC</h3>
+<span>Restricted Area</span>
+</div>
+
+<div class="master-badge"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3 8l4 3 5-6 5 6 4-3-2 10H5L3 8Z'/><path d='M5 21h14'/></svg> MASTER VERIFIED</div>
+
+<div class="grid">
+<div class="card"><div class="number">1,000,000</div><div class="label">Master XP</div></div>
+<div class="card"><div class="number">999,999</div><div class="label">Master Score</div></div>
+<div class="card"><div class="number">MASTER</div><div class="label">Access Level</div></div>
+<div class="card"><div class="number">7/7</div><div class="label">Rank Completed</div></div>
+</div>
+
+<div class="section">
+<div class="achievement">
+<div class="badge"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3 8l4 3 5-6 5 6 4-3-2 10H5L3 8Z'/><path d='M5 21h14'/></svg></div>
+<h4>Astronomy TEC Master</h4>
+<p>Status khusus Owner / Master Community.</p>
+</div>
+</div>
+</div>
+</section>
+
+<footer>
+ASTRONOMY TEC<br>
+Astronomy • Astrophysics • Coding • Informatics<br><br>
+<b>From ZIURIXY × HANZZY CODING</b>
+</footer>
+</main>
+
+<nav class="bottom-nav">
+<button data-page="home" class="active"><div><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3 11l9-7 9 7'/><path d='M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9'/></svg></div>Utama</button>
+<button data-page="mading"><div><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='5' width='14' height='14' rx='1'/><path d='M17 8h3a1 1 0 0 1 1 1v9a2 2 0 0 1-2 2H6'/><path d='M7 9h6M7 12h6M7 15h4'/></svg></div>Mading</button>
+<button data-page="academy"><div><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4 5.5A2.5 2.5 0 0 1 6.5 3H12v18H6.5A2.5 2.5 0 0 1 4 18.5v-13Z'/><path d='M12 3h5.5A2.5 2.5 0 0 1 20 5.5v13a2.5 2.5 0 0 1-2.5 2.5H12'/></svg></div>Academy</button>
+<button data-page="exam"><div><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4 17.5V20h2.5L18 8.5 15.5 6 4 17.5Z'/><path d='M13.5 7.5 16.5 10.5'/></svg></div>Ujian</button>
+<button data-page="settings"><div><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'/><path d='M19.4 13.5a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H2.5a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H8.7a1.7 1.7 0 0 0 1-1.6V2.5a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.6 1h.2a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.6 1Z'/></svg></div>Pengaturan</button>
+</nav>
+
+<div class="modal" id="examModal">
+<div class="modal-box">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+<div>
+<h3 id="examTitle">Ujian</h3>
+<p class="muted" id="examDescription"></p>
+</div>
+<button class="btn" onclick="closeExam()"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 5l14 14M19 5 5 19'/></svg></button>
+</div>
+<div id="examContent"></div>
+</div>
+</div>
+
+<div class="modal" id="premiumModal">
+<div class="modal-box">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<div>
+<h3><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M6 3h12l3 5-9 13L3 8l3-5Z'/><path d='M3 8h18M9 3l-2 5 5 13 5-13-2-5'/></svg> Premium Astronomy TEC</h3>
+<p class="muted">Aktivasi Premium Member</p>
+</div>
+<button class="btn" onclick="closePremium()"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 5l14 14M19 5 5 19'/></svg></button>
+</div>
+
+<div class="premium-box">
+<h3>Rp 4.999 / bulan</h3>
+
+<p class="muted" style="line-height:1.8">
+Silakan lakukan pembayaran melalui DANA.<br>
+Setelah pembayaran selesai, hubungi Admin dan kirim bukti pembayaran.
+</p>
+
+<a href="https://link.dana.id/minta?full_url=https://qr.dana.id/v1/281012092026092262595453"
+target="_blank" class="btn primary"
+style="display:block;text-align:center;text-decoration:none;margin-top:15px">
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='6' width='18' height='12' rx='1.5'/><path d='M3 10h18'/><path d='M6 14h4'/></svg> Bayar via DANA
+</a>
+
+<div style="margin-top:15px;padding:13px;border:1px solid #294667;
+border-radius:12px;background:#071120;font-size:10px;line-height:1.7">
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='7' y='2.5' width='10' height='19' rx='2'/><path d='M11 19h2'/></svg> Admin WhatsApp:<br>
+<b style="font-size:14px">+62 857 2256 7019</b><br><br>
+Setelah membayar, kirim bukti pembayaran kepada Admin.
+Admin akan memberikan kode Premium.
+</div>
+
+<div class="field" style="margin-top:18px">
+<label>KODE PREMIUM</label>
+<input id="premiumCode" type="text" placeholder="Masukkan kode Premium">
+</div>
+
+<button class="btn primary" style="width:100%" onclick="activatePremium()">
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='5' y='11' width='14' height='9' rx='1.5'/><path d='M8 11V7a4 4 0 0 1 7.5-2'/></svg> Aktifkan Premium
+</button>
+</div>
+</div>
+</div>
+
+<!-- MODAL MATERI -->
+<div class="modal" id="lessonModal">
+<div class="modal-box">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<h3 id="lessonTitle">Materi</h3>
+<button class="btn" onclick="closeLesson()"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 5l14 14M19 5 5 19'/></svg></button>
+</div>
+<img id="lessonImage" class="lesson-image">
+<div id="lessonText" class="lesson-text"></div>
+<button class="btn primary" style="width:100%;margin-top:18px"
+onclick="finishCurrentLesson()"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 12l5 5L20 6'/></svg> Tandai Materi Selesai</button>
+</div>
+</div>
+
+<!-- MODAL CS -->
+<div class="modal" id="csModal">
+<div class="modal-box">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+<div style="display:flex;align-items:center;gap:10px">
+<img class="cs-avatar" style="width:38px;height:38px" src="https://files.catbox.moe/ztw9wy.png">
+<div>
+<h3 style="font-size:13px">Ziurixy Official <span class="cs-online" style="margin-left:4px"></span></h3>
+<p class="muted" style="font-size:9px">Customer Service Astronomy TEC</p>
+</div>
+</div>
+<button class="btn" onclick="closeCS()"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 5l14 14M19 5 5 19'/></svg></button>
+</div>
+
+<div class="chat-log" id="csChatLog"></div>
+
+<div class="chat-quick" id="csQuickReplies"></div>
+
+<div class="chat-input-row">
+<button class="cs-icon-btn" onclick="csTriggerAttach()" title="Kirim foto/video">
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 5v14M5 12h14'/></svg>
+</button>
+<input type="file" id="csAttachInput" accept="image/*,video/*" style="display:none">
+
+<input id="csInput" type="text" placeholder="Tulis pertanyaan kamu...">
+
+<button class="cs-icon-btn" id="csMicBtn" onclick="csToggleRecording()" title="Rekam pesan suara">
+<span id="csMicIcon"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><rect x='9' y='3' width='6' height='11' rx='3'/><path d='M5 11a7 7 0 0 0 14 0'/><path d='M12 18v3'/></svg></span>
+<span class="cs-wave" id="csWave"><span></span><span></span><span></span><span></span></span>
+</button>
+
+<button onclick="sendCSMessage()">
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4 12h16M14 6l6 6-6 6'/></svg>
+</button>
+</div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+const TEC_LOGO="https://files.catbox.moe/7fgnm9.jpg";
+const VERIFIED_LOGO="https://files.catbox.moe/yl9zup.png";
+
+const MASTER_CODE="TEC/onwer/admin56342029ziurixy/wtsrhyc3451bndgitb";
+
+const PREMIUM_CODES=[
+"TEC-PREM-7XK2-91QA",
+"TEC-PREM-A8M4-52ZR",
+"TEC-PREM-K7P9-44TX",
+"TEC-PREM-2FQ8-73LM",
+"TEC-PREM-H6D1-85WK",
+"TEC-PREM-B4N7-19YU",
+"TEC-PREM-R8C3-62VP",
+"TEC-PREM-M5Z9-31KA",
+"TEC-PREM-Q2L6-94SD",
+"TEC-PREM-T7V4-28BX",
+"TEC-PREM-Y9N3-57HJ",
+"TEC-PREM-C6W8-43PF",
+"TEC-PREM-J4K1-86RX",
+"TEC-PREM-P8D5-27GM",
+"TEC-PREM-X3A7-69NL",
+"TEC-PREM-F5R2-14QV",
+"TEC-PREM-N7H4-83ZT",
+"TEC-PREM-V2B9-46KC",
+"TEC-PREM-L6S3-75YW",
+"TEC-PREM-Z8Q1-32MD"
+];
+
+const RANKS=[
+{name:"Explorer",subject:"Astronomy Foundation",xp:300,pass:75},
+{name:"Observer",subject:"Solar System",xp:450,pass:75},
+{name:"Stargazer",subject:"Stars & Galaxies",xp:600,pass:78},
+{name:"Astrophysicist",subject:"Astrophysics",xp:800,pass:80},
+{name:"Astro Coder",subject:"Astronomy + Informatics",xp:1000,pass:82},
+{name:"Researcher",subject:"Research + Coding",xp:1250,pass:85},
+{name:"TEC Senior",subject:"Final Astronomy TEC",xp:1500,pass:85}
+];
+
+const COURSES=[
+{
+icon:"<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='9'/><path d='M3 12h18M12 3c2.5 2.5 4 6 4 9s-1.5 6.5-4 9c-2.5-2.5-4-6-4-9s1.5-6.5 4-9Z'/></svg>",
+title:"Astronomy Foundation",
+desc:"Dasar astronomi dan benda langit.",
+image:"https://files.catbox.moe/smo2sc.jpg",
+text:`APA ITU ASTRONOMY?
+
+Astronomy atau astronomi adalah ilmu yang mempelajari benda-benda dan fenomena di luar angkasa.
+
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='4.5'/><ellipse cx='12' cy='12' rx='9.5' ry='3'/></svg> Planet
+
+Planet adalah benda langit yang mengorbit sebuah bintang dan tidak menghasilkan cahaya sendiri. Planet terlihat bercahaya karena memantulkan cahaya bintangnya.
+
+Contoh:
+
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='9'/><path d='M3 12h18M12 3c2.5 2.5 4 6 4 9s-1.5 6.5-4 9c-2.5-2.5-4-6-4-9s1.5-6.5 4-9Z'/></svg> Bumi : mengorbit Matahari
+🔴 Mars : mengorbit Matahari
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='4.5'/><ellipse cx='12' cy='12' rx='9.5' ry='3'/></svg> Saturnus : mengorbit Matahari`
+},
+{
+icon:"<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='4.5'/><path d='M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1'/></svg>",
+title:"Solar System",
+desc:"Matahari, planet dan satelit.",
+image:"https://files.catbox.moe/1qq29r.jpg",
+text:`<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6-4.5-4.2 6.1-.7L12 3Z'/></svg> Bintang
+
+Bintang adalah bola gas/plasma yang sangat panas dan menghasilkan cahaya serta energi sendiri melalui reaksi fusi nuklir di intinya.
+
+Contoh: Matahari <svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='4.5'/><path d='M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1'/></svg>
+
+Matahari sebenarnya adalah sebuah bintang. Jadi bintang yang kita lihat di malam hari itu kurang lebih seperti Matahari, hanya saja jaraknya jauh banget.`
+},
+{
+icon:"<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6-4.5-4.2 6.1-.7L12 3Z'/></svg>",
+title:"Stars & Galaxies",
+desc:"Bintang, galaksi dan nebula.",
+image:"https://files.catbox.moe/1qq29r.jpg",
+text:`<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6-4.5-4.2 6.1-.7L12 3Z'/></svg> Bintang dan Galaksi
+
+Bintang merupakan objek astronomi yang menghasilkan energi sendiri. Bintang dapat berkumpul membentuk galaksi bersama gas, debu, materi gelap dan objek lainnya.`
+},
+{
+icon:"<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M3 15.5 16 9l1.5 3-13 6.5-1.5-3Z'/><path d='M14.5 8 20 5.5 21 8l-5.5 2.5'/><path d='M8 17l-2 4M11 15.5l-1.5 4.5'/><circle cx='17.5' cy='6.5' r='1'/></svg>",
+title:"Astronomical Observation",
+desc:"Dasar observasi objek langit.",
+image:"",
+text:`<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M3 15.5 16 9l1.5 3-13 6.5-1.5-3Z'/><path d='M14.5 8 20 5.5 21 8l-5.5 2.5'/><path d='M8 17l-2 4M11 15.5l-1.5 4.5'/><circle cx='17.5' cy='6.5' r='1'/></svg> Observasi Astronomi
+
+Observasi astronomi adalah kegiatan mengamati dan mencatat objek langit menggunakan mata, teleskop, kamera, atau instrumen ilmiah lainnya.`
+},
+{
+icon:"<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='4.5'/><ellipse cx='12' cy='12' rx='9.5' ry='3'/></svg>",
+title:"Astrophysics",
+desc:"Fisika bintang dan fenomena kosmik.",
+image:"",
+text:`<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='4.5'/><ellipse cx='12' cy='12' rx='9.5' ry='3'/></svg> Astrofisika
+
+Astrofisika menggunakan hukum fisika untuk mempelajari bintang, planet, galaksi, lubang hitam, radiasi dan berbagai fenomena kosmik.`
+},
+{
+icon:"<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='6' y='6' width='12' height='12' rx='1.5'/><rect x='9.5' y='9.5' width='5' height='5'/><path d='M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3'/></svg>",
+title:"Astroinformatics",
+desc:"Coding, data dan informatika astronomi.",
+image:"",
+text:`<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='6' y='6' width='12' height='12' rx='1.5'/><rect x='9.5' y='9.5' width='5' height='5'/><path d='M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3'/></svg> Astroinformatics
+
+Astroinformatics menggabungkan astronomi, komputer, pemrograman dan analisis data untuk memproses data astronomi dalam jumlah besar.`
+}
+];
+
+const ACHIEVEMENTS=[
+["<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M12 21v-8'/><path d='M12 13c0-4 3-6 7-6 0 4-3 6-7 6Z'/><path d='M12 13c0-3.5-2.5-5-6-5 0 3.5 2.5 5 6 5Z'/></svg>","First Step","Memulai perjalanan Astronomy TEC."],
+["<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4 5.5A2.5 2.5 0 0 1 6.5 3H12v18H6.5A2.5 2.5 0 0 1 4 18.5v-13Z'/><path d='M12 3h5.5A2.5 2.5 0 0 1 20 5.5v13a2.5 2.5 0 0 1-2.5 2.5H12'/></svg>","First Lesson","Menyelesaikan materi pertama."],
+["<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4 17.5V20h2.5L18 8.5 15.5 6 4 17.5Z'/><path d='M13.5 7.5 16.5 10.5'/></svg>","First Exam","Mengikuti ujian pertama."],
+["<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='8'/><circle cx='12' cy='12' r='4.5'/><circle cx='12' cy='12' r='1'/></svg>","Exam Passed","Lulus ujian kenaikan rank."],
+["<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6-4.5-4.2 6.1-.7L12 3Z'/></svg>","Rising Star","Mencapai Rank 3."],
+["<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M3 15.5 16 9l1.5 3-13 6.5-1.5-3Z'/><path d='M14.5 8 20 5.5 21 8l-5.5 2.5'/><path d='M8 17l-2 4M11 15.5l-1.5 4.5'/><circle cx='17.5' cy='6.5' r='1'/></svg>","Observer","Menyelesaikan materi observasi."],
+["<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='4.5'/><ellipse cx='12' cy='12' rx='9.5' ry='3'/></svg>","Astrophysics","Mencapai Rank 4."],
+["<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='6' y='6' width='12' height='12' rx='1.5'/><rect x='9.5' y='9.5' width='5' height='5'/><path d='M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3'/></svg>","Astro Coder","Mempelajari Astroinformatics."],
+["<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M9 18h7'/><path d='M11 18v-3.5a3 3 0 1 1 4-2.8'/><path d='M10 8.5 13.5 5'/><path d='M8 6.5l3 3'/><path d='M5 21h11'/></svg>","Researcher","Mencapai Rank 6."],
+["<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M14 3c3 1 5.5 3.5 6.5 6.5-3.5 1-7 3-9.5 5.5L7 12c2.5-2.5 4.5-6 7-9Z'/><circle cx='15' cy='9' r='1.2'/><path d='M9.5 15 6 18.5M7 13l-3 1 1-3M11 17l-1 3-3 1'/></svg>","TEC Senior","Mencapai Rank 7."],
+["<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M7 4h10v4a5 5 0 0 1-10 0V4Z'/><path d='M7 5H4a1 1 0 0 0-1 1c0 2.5 1.8 4 3.5 4'/><path d='M17 5h3a1 1 0 0 1 1 1c0 2.5-1.8 4-3.5 4'/><path d='M10 15v2h4v-2'/><path d='M8 21h8'/><path d='M12 17v4'/></svg>","Perfect Score","Mendapat nilai 100."],
+["<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='2'/><ellipse cx='12' cy='12' rx='10' ry='4' transform='rotate(20 12 12)'/><ellipse cx='12' cy='12' rx='10' ry='4' transform='rotate(-20 12 12)'/></svg>","TEC Journey","Menyelesaikan perjalanan Academy."]
+];
+
+function csDefaultState(){
+return{
+name:"",
+username:"@member",
+avatar:"",
+cover:"",
+bio:"Member Astronomy TEC",
+language:"id",
+theme:"dark",
+notification:"on",
+animation:"on",
+rank:1,
+xp:0,
+passed:[],
+scores:[],
+achievements:[],
+lessons:[],
+master:false,
+premium:false,
+premiumCode:"",
+premiumActivatedAt:null
+};
+}
+
+let state;
+
+try{
+const savedRaw=localStorage.getItem("ASTRONOMY_TEC_DATA");
+const saved=savedRaw?JSON.parse(savedRaw):null;
+state=Object.assign(csDefaultState(),saved||{});
+}catch(err){
+console.error("Gagal membaca data tersimpan, memakai data default:",err);
+state=csDefaultState();
+}
+
+function $(id){return document.getElementById(id)}
+
+function save(){
+
+try{
+localStorage.setItem("ASTRONOMY_TEC_DATA",JSON.stringify(state));
+}catch(err){
+console.error("Gagal menyimpan data (mungkin storage penuh):",err);
+toast("Gagal menyimpan data. Coba pakai foto/background yang lebih kecil.");
+}
+
+render();
+}
+
+function currentRank(){
+return RANKS[Math.min(state.rank-1,RANKS.length-1)];
+}
+
+const titles={
+home:["Dashboard Pencapaian","Perjalanan belajar Astronomy TEC kamu"],
+mading:["Mading Astronomy TEC","Poster dan informasi community"],
+academy:["Academy","Materi pembelajaran virtual"],
+exam:["Ujian","Ujian kenaikan rank"],
+achievement:["Pencapaian","Kumpulan achievement kamu"],
+certificate:["Sertifikat","Pencapaian virtual community"],
+profile:["Profil","Profil anggota Astronomy TEC"],
+premium:["Premium","Premium Member Astronomy TEC"],
+settings:["Pengaturan","Profile, bahasa dan akses Master"],
+master:["Master Astronomy TEC","Restricted Area"]
+};
+
+function showPage(id){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+if(!$(id))return;
+$(id).classList.add("active");
+
+document.querySelectorAll(".desktop-menu button,.bottom-nav button")
+.forEach(b=>b.classList.toggle("active",b.dataset.page===id));
+
+if(titles[id]){
+$("pageTitle").textContent=titles[id][0];
+$("pageSubtitle").textContent=titles[id][1];
+}
+window.scrollTo({top:0,behavior:"smooth"});
+}
+
+document.querySelectorAll(".desktop-menu button,.bottom-nav button")
+.forEach(button=>{
+button.onclick=()=>showPage(button.dataset.page);
+});
+
+function render(){
+
+const displayName=state.name||"ABHIZAN";
+
+$("topName").textContent=displayName;
+$("welcomeName").textContent=displayName;
+$("profileName").textContent=displayName;
+
+$("profileUsername").textContent=state.username;
+$("profileBio").textContent=state.bio;
+
+$("heroRank").textContent=
+state.rank+" — "+currentRank().name.toUpperCase();
+
+$("profileRank").textContent=
+"Rank "+state.rank+" — "+currentRank().name;
+
+$("profileRankNumber").textContent=state.rank;
+$("profileXP").textContent=state.xp;
+$("profileExam").textContent=state.passed.length;
+$("profileAchievement").textContent=state.achievements.length;
+
+$("statAchievement").textContent=state.achievements.length;
+$("statExam").textContent=state.passed.length;
+$("statXP").textContent=state.xp;
+
+let average=0;
+
+if(state.scores.length){
+average=Math.round(
+state.scores.reduce((a,b)=>a+b,0)/state.scores.length
+);
+}
+
+$("statAverage").textContent=average;
+
+if(state.avatar){
+$("topAvatar").src=state.avatar;
+$("bigAvatar").src=state.avatar;
+$("settingsAvatarPreview").src=state.avatar;
+}
+
+renderSiteBackground();
+
+if(state.cover){
+$("profileCover").style.backgroundImage="url('"+state.cover+"')";
+$("settingsCoverPreview").src=state.cover;
+}else{
+$("profileCover").style.backgroundImage=
+"linear-gradient(135deg,#173967,#081020)";
+$("settingsCoverPreview").src="";
+}
+
+$("removeCoverBtn").style.display=state.cover?"block":"none";
+
+const verified=state.premium||state.master;
+
+$("topVerified").style.display=verified?"inline-block":"none";
+$("profileVerified").style.display=verified?"inline-block":"none";
+
+renderMemberStatus();
+
+let percent=0;
+
+if(state.rank>=RANKS.length){
+percent=100;
+}else{
+percent=Math.min(
+100,
+Math.round(state.xp/RANKS[state.rank].xp*100)
+);
+}
+
+$("progressPercent").textContent=percent+"%";
+$("progressFill").style.width=percent+"%";
+
+$("progressText").textContent=
+state.rank>=RANKS.length
+?"Rank maksimum tercapai"
+:"Progress menuju Rank "+(state.rank+1);
+
+renderRanks();
+renderAchievements();
+renderCourses();
+renderExams();
+renderSettings();
+
+$("desktopMaster").style.display=
+state.master?"block":"none";
+}
+
+function renderSiteBackground(){
+
+const img=$("siteBgImage");
+const overlay=$("siteBgOverlay");
+
+if(state.cover){
+
+img.src=state.cover;
+img.style.display="block";
+overlay.style.display="block";
+
+}else{
+
+img.style.display="none";
+overlay.style.display="none";
+
+}
+}
+
+function renderMemberStatus(){
+
+let html="";
+
+if(state.premium){
+
+html+=`
+<div class="premium-badge"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M6 3h12l3 5-9 13L3 8l3-5Z'/><path d='M3 8h18M9 3l-2 5 5 13 5-13-2-5'/></svg> PREMIUM MEMBER</div>
+<div class="vip-badge"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3 8l4 3 5-6 5 6 4-3-2 10H5L3 8Z'/><path d='M5 21h14'/></svg> VIP</div>
+`;
+
+}else{
+
+html+=`
+<div class="vip-badge"><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='8' r='3.3'/><path d='M5 20c0-3.5 3-6 7-6s7 2.5 7 6'/></svg> FREE MEMBER</div>
+`;
+
+}
+
+$("memberStatus").innerHTML=html;
+
+$("premiumStatus").innerHTML=
+state.premium
+?`
+<div class="premium-active">
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 12l5 5L20 6'/></svg> Premium Member aktif<br>
+<small>VIP + Verified Member aktif</small>
+</div>
+`
+:`
+<div style="color:#9aabc2;font-size:10px;line-height:1.6">
+Kamu belum memiliki Premium Member.
+</div>
+`;
+}
+
+function renderRanks(){
+
+$("rankList").innerHTML=RANKS.map((rank,index)=>{
+
+const number=index+1;
+
+return `
+<div class="rank-card ${
+number===state.rank?"current":
+number>state.rank?"locked":""
+}">
+<div class="rank-number">
+RANK ${number}
+${number<state.rank?"<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 12l5 5L20 6'/></svg>":number===state.rank?"●":"<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='5' y='11' width='14' height='9' rx='1.5'/><path d='M8 11V7a4 4 0 0 1 8 0v4'/></svg>"}
+</div>
+<h4>${rank.name}</h4>
+<p>${rank.subject}</p>
+</div>
+`;
+
+}).join("");
+}
+
+function renderAchievements(){
+
+$("achievementCount").textContent=
+state.achievements.length+" / "+ACHIEVEMENTS.length;
+
+$("achievementList").innerHTML=
+ACHIEVEMENTS.map((achievement,index)=>{
+
+const unlocked=state.achievements.includes(index);
+
+return `
+<div class="achievement"
+style="${unlocked?"border-color:#3c8c83":"opacity:.45"}">
+<div class="badge">${achievement[0]}</div>
+<h4>${achievement[1]} ${unlocked?"<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 12l5 5L20 6'/></svg>":"<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='5' y='11' width='14' height='9' rx='1.5'/><path d='M8 11V7a4 4 0 0 1 8 0v4'/></svg>"}</h4>
+<p>${achievement[2]}</p>
+</div>
+`;
+
+}).join("");
+
+$("homeAchievement").innerHTML=
+ACHIEVEMENTS.slice(0,3).map((achievement,index)=>{
+
+const unlocked=state.achievements.includes(index);
+
+return `
+<div class="achievement"
+style="${unlocked?"border-color:#3c8c83":"opacity:.45"}">
+<div class="badge">${achievement[0]}</div>
+<h4>${achievement[1]} ${unlocked?"<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 12l5 5L20 6'/></svg>":"<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='5' y='11' width='14' height='9' rx='1.5'/><path d='M8 11V7a4 4 0 0 1 8 0v4'/></svg>"}</h4>
+<p>${achievement[2]}</p>
+</div>
+`;
+
+}).join("");
+}
+
+let currentLesson=-1;
+
+function renderCourses(){
+
+$("courses").innerHTML=COURSES.map((course,index)=>{
+
+const completed=state.lessons.includes(index);
+
+return `
+<div class="course-card">
+<div class="course-icon">${course.icon}</div>
+
+<h4>${course.title} ${completed?"<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 12l5 5L20 6'/></svg>":""}</h4>
+
+<p>${course.desc}</p>
+
+<button class="btn ${completed?"":"primary"}"
+style="margin-top:12px"
+onclick="openLesson(${index})">
+${completed?"Lihat Materi":"Pelajari"}
+</button>
+</div>
+`;
+
+}).join("");
+}
+
+function openLesson(index){
+
+currentLesson=index;
+
+const course=COURSES[index];
+
+$("lessonTitle").textContent=course.icon+" "+course.title;
+$("lessonImage").src=course.image;
+$("lessonImage").style.display=course.image?"block":"none";
+$("lessonText").textContent=course.text;
+
+$("lessonModal").classList.add("show");
+}
+
+function closeLesson(){
+$("lessonModal").classList.remove("show");
+}
+
+function finishCurrentLesson(){
+
+if(currentLesson<0)return;
+
+if(!state.lessons.includes(currentLesson)){
+
+state.lessons.push(currentLesson);
+
+if(!state.achievements.includes(1)){
+state.achievements.push(1);
+}
+
+state.xp+=25;
+
+save();
+
+toast("Materi selesai • +25 XP");
+}
+
+closeLesson();
+}
+
+function renderExams(){
+
+$("examList").innerHTML=`
+
+<div class="exam">
+<div>
+<h4><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M14 3c3 1 5.5 3.5 6.5 6.5-3.5 1-7 3-9.5 5.5L7 12c2.5-2.5 4.5-6 7-9Z'/><circle cx='15' cy='9' r='1.2'/><path d='M9.5 15 6 18.5M7 13l-3 1 1-3M11 17l-1 3-3 1'/></svg> Rank 1 → Rank 2 — Observer</h4>
+<p>Astronomy Foundation • 40 soal • Minimal 75</p>
+</div>
+
+<button class="btn primary" onclick="startExam(0)">
+Mulai Ujian
+</button>
+</div>
+
+<div class="exam locked">
+<div>
+<h4><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M6 3h12M6 21h12'/><path d='M7 3c0 4 3 5.5 5 6.5M17 3c0 4-3 5.5-5 6.5M7 21c0-4 3-5.5 5-6.5M17 21c0-4-3-5.5-5-6.5'/></svg> Rank 2 → Rank 3 — Stargazer</h4>
+<p>Segera Hadir! Ujian ini sedang disiapkan oleh Admin / Owner Astronomy TEC.</p>
+</div>
+<button class="btn" disabled><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M6 3h12M6 21h12'/><path d='M7 3c0 4 3 5.5 5 6.5M17 3c0 4-3 5.5-5 6.5M7 21c0-4 3-5.5 5-6.5M17 21c0-4-3-5.5-5-6.5'/></svg> Segera Hadir</button>
+</div>
+
+${[
+"Rank 3 → Rank 4 — Astrophysicist",
+"Rank 4 → Rank 5 — Astro Coder",
+"Rank 5 → Rank 6 — Researcher",
+"Rank 6 → Rank 7 — TEC Senior"
+].map(x=>`
+<div class="exam locked">
+<div>
+<h4><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='5' y='11' width='14' height='9' rx='1.5'/><path d='M8 11V7a4 4 0 0 1 8 0v4'/></svg> ${x}</h4>
+<p>Ujian ini belum tersedia. Menunggu persetujuan Admin / Owner Astronomy TEC.</p>
+</div>
+<button class="btn" disabled><svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='5' y='11' width='14' height='9' rx='1.5'/><path d='M8 11V7a4 4 0 0 1 8 0v4'/></svg> Terkunci</button>
+</div>
+`).join("")}
+
+`;
+}
+
+const QUESTIONS=[
+[
+"Mengapa bintang yang lebih masif umumnya memiliki umur lebih pendek?",
+"Karena membakar bahan bakar nuklir dengan laju jauh lebih tinggi",
+"Karena tidak memiliki inti",
+"Karena selalu berada lebih dekat dengan Matahari",
+"Karena suhunya selalu lebih rendah"
+],
+[
+"Jika sebuah bintang memiliki paralaks tahunan yang sangat kecil, apa yang dapat disimpulkan?",
+"Bintang tersebut kemungkinan sangat jauh dari pengamat",
+"Bintang tersebut memiliki massa sangat besar",
+"Bintang tersebut pasti merupakan planet",
+"Bintang tersebut tidak menghasilkan cahaya"
+],
+[
+"Apa fungsi utama diagram Hertzsprung–Russell?",
+"Menghubungkan luminositas dengan temperatur atau warna bintang",
+"Menentukan jumlah planet dalam galaksi",
+"Mengukur kecepatan rotasi Bumi",
+"Menentukan jarak Matahari dari Bumi"
+],
+[
+"Mengapa Matahari tidak mengalami ledakan supernova?",
+"Karena massanya tidak cukup besar untuk menjalani evolusi supernova inti",
+"Karena Matahari tidak memiliki gravitasi",
+"Karena Matahari merupakan planet",
+"Karena Matahari tidak memiliki hidrogen"
+],
+[
+"Apa yang menyebabkan pergantian musim di Bumi?",
+"Kemiringan sumbu rotasi Bumi terhadap bidang orbitnya",
+"Jarak Bumi ke Matahari berubah drastis setiap bulan",
+"Matahari mengelilingi Bumi",
+"Rotasi Bulan terhadap Bumi"
+],
+[
+"Jika sebuah planet berada dua kali lebih jauh dari Matahari dibandingkan Bumi, bagaimana intensitas radiasi Matahari yang diterimanya secara ideal?",
+"Empat kali lebih kecil",
+"Dua kali lebih besar",
+"Tetap sama",
+"Setengahnya"
+],
+[
+"Apa yang dimaksud dengan tahun cahaya?",
+"Jarak yang ditempuh cahaya dalam satu tahun",
+"Waktu yang dibutuhkan cahaya untuk mengelilingi Bumi",
+"Lama perjalanan cahaya dari Bulan ke Bumi",
+"Umur rata-rata sebuah bintang"
+],
+[
+"Mengapa Bulan selalu memperlihatkan sisi yang hampir sama kepada Bumi?",
+"Periode rotasi Bulan sama dengan periode revolusinya mengelilingi Bumi",
+"Bulan tidak berotasi",
+"Bumi mengunci rotasi Bulan",
+"Bulan hanya memiliki satu sisi"
+],
+[
+"Apa yang menyebabkan fase-fase Bulan?",
+"Perubahan posisi relatif Matahari, Bumi, dan Bulan",
+"Perubahan bentuk fisik Bulan",
+"Bayangan Bumi setiap malam",
+"Perubahan ukuran Bulan"
+],
+[
+"Jika cahaya sebuah galaksi mengalami redshift, interpretasi yang umum adalah...",
+"Galaksi tersebut kemungkinan bergerak menjauh relatif terhadap pengamat",
+"Galaksi tersebut mendekati pengamat",
+"Galaksi tersebut tidak memiliki bintang",
+"Galaksi tersebut berhenti bergerak"
+],
+[
+"Apa hubungan temperatur permukaan bintang dan warna dominannya?",
+"Bintang lebih panas cenderung tampak lebih biru, sedangkan yang lebih dingin cenderung lebih merah",
+"Semua bintang memiliki warna sama",
+"Bintang merah selalu lebih panas daripada bintang biru",
+"Warna bintang tidak berkaitan dengan temperatur"
+],
+[
+"Apa yang dimaksud dengan luminositas bintang?",
+"Jumlah energi yang dipancarkan bintang per satuan waktu",
+"Ukuran fisik bintang",
+"Jumlah planet yang mengorbit bintang",
+"Jarak bintang dari Bumi"
+],
+[
+"Mengapa bintang tampak berkedip ketika diamati dari permukaan Bumi?",
+"Karena turbulensi atmosfer Bumi membiaskan cahaya secara berubah-ubah",
+"Karena bintang benar-benar mati dan hidup kembali",
+"Karena bintang berputar sangat cepat",
+"Karena Matahari menghalangi cahayanya"
+],
+[
+"Apa yang dimaksud dengan magnitudo tampak?",
+"Ukuran kecerlangan objek yang terlihat dari Bumi",
+"Ukuran massa bintang",
+"Ukuran suhu inti bintang",
+"Ukuran diameter galaksi"
+],
+[
+"Dalam skala magnitudo astronomi, objek dengan nilai magnitudo lebih kecil umumnya...",
+"Lebih terang secara tampak",
+"Lebih jauh",
+"Lebih dingin",
+"Lebih kecil"
+],
+[
+"Apa fungsi spektroskopi dalam astronomi?",
+"Mendeteksi komposisi, temperatur, gerakan, dan sifat fisik objek melalui spektrum",
+"Menghilangkan cahaya bintang",
+"Mengubah orbit planet",
+"Mengukur kedalaman laut"
+],
+[
+"Jika garis spektrum suatu objek bergeser ke panjang gelombang lebih panjang, fenomena tersebut disebut...",
+"Redshift",
+"Blueshift",
+"Paralaks",
+"Difraksi"
+],
+[
+"Apa yang dapat menyebabkan blueshift pada cahaya objek astronomi?",
+"Objek bergerak mendekati pengamat pada arah garis pandang",
+"Objek kehilangan seluruh energinya",
+"Objek berhenti berotasi",
+"Objek berubah menjadi planet"
+],
+[
+"Mengapa gerhana Matahari tidak terjadi setiap bulan?",
+"Orbit Bulan miring terhadap bidang orbit Bumi sehingga ketiga benda tidak selalu sejajar sempurna",
+"Bulan tidak memiliki orbit",
+"Matahari terlalu kecil",
+"Bumi berhenti berotasi"
+],
+[
+"Apa penyebab utama pasang surut air laut di Bumi?",
+"Gaya gravitasi terutama dari Bulan dan juga Matahari",
+"Angin matahari",
+"Rotasi Matahari",
+"Medan magnet Jupiter"
+],
+[
+"Planet manakah yang memiliki periode rotasi lebih lama daripada periode revolusinya mengelilingi Matahari?",
+"Venus",
+"Mars",
+"Bumi",
+"Jupiter"
+],
+[
+"Mengapa Venus memiliki temperatur permukaan yang sangat tinggi?",
+"Karena atmosfer tebalnya menyebabkan efek rumah kaca yang sangat kuat",
+"Karena Venus paling dekat dengan Matahari",
+"Karena Venus memiliki lautan magma seluruhnya",
+"Karena Venus tidak memiliki atmosfer"
+],
+[
+"Apa yang disebut dengan zona laik huni secara sederhana?",
+"Wilayah di mana air cair dapat berpotensi bertahan di permukaan dengan kondisi yang sesuai",
+"Wilayah paling dekat dengan inti galaksi",
+"Wilayah tanpa gravitasi",
+"Wilayah yang selalu memiliki kehidupan"
+],
+[
+"Apa fungsi medan magnet Bumi terhadap lingkungan antariksa?",
+"Membantu melindungi Bumi dari sebagian partikel bermuatan angin Matahari",
+"Menghentikan semua radiasi Matahari",
+"Mengubah Matahari menjadi bintang merah",
+"Menghentikan rotasi Bumi"
+],
+[
+"Apa yang dimaksud dengan asteroid?",
+"Benda langit berbatu atau logam yang mengorbit Matahari",
+"Bintang yang sudah mati",
+"Planet yang kehilangan atmosfer",
+"Satelit alami Bumi"
+],
+[
+"Mengapa komet dapat memiliki ekor ketika mendekati Matahari?",
+"Karena es dan material volatil mengalami pemanasan lalu membentuk koma dan ekor",
+"Karena inti komet terbakar seluruhnya",
+"Karena komet memiliki atmosfer seperti Bumi",
+"Karena gravitasi Bumi menarik debunya"
+],
+[
+"Apa perbedaan utama meteor dan meteorit?",
+"Meteor adalah fenomena cahaya saat objek memasuki atmosfer, sedangkan meteorit adalah material yang berhasil mencapai permukaan",
+"Meteor selalu lebih besar",
+"Meteorit selalu berada di luar angkasa",
+"Meteor adalah planet kecil"
+],
+[
+"Apa yang dimaksud dengan eksoplanet?",
+"Planet yang mengorbit bintang selain Matahari",
+"Planet yang mengorbit Bulan",
+"Planet yang berada di pusat galaksi",
+"Planet tanpa gravitasi"
+],
+[
+"Metode transit dalam pencarian eksoplanet mendeteksi...",
+"Perubahan kecil kecerlangan bintang ketika planet melintas di depannya",
+"Suara planet",
+"Warna inti planet secara langsung",
+"Rotasi galaksi"
+],
+[
+"Apa yang dimaksud dengan supernova?",
+"Ledakan atau peristiwa akhir sangat energik pada bintang tertentu",
+"Planet baru",
+"Komet yang mendekati Matahari",
+"Gerhana total"
+],
+[
+"Apa yang tersisa dari inti bintang masif setelah supernova tertentu?",
+"Bisa berupa bintang neutron atau lubang hitam, tergantung kondisi awal",
+"Selalu menjadi planet",
+"Selalu menjadi asteroid",
+"Selalu menghilang tanpa sisa"
+],
+[
+"Mengapa lubang hitam tidak dapat diamati secara langsung seperti bintang biasa?",
+"Karena tidak memancarkan cahaya yang dapat keluar dari horizon peristiwanya",
+"Karena lubang hitam transparan",
+"Karena tidak memiliki gravitasi",
+"Karena ukurannya selalu lebih kecil dari atom"
+],
+[
+"Apa yang dimaksud dengan horizon peristiwa?",
+"Batas di sekitar lubang hitam yang dari dalamnya cahaya tidak dapat keluar",
+"Permukaan sebuah bintang",
+"Orbit terluar galaksi",
+"Batas atmosfer Bumi"
+],
+[
+"Apa fungsi teleskop astronomi?",
+"Mengumpulkan dan memfokuskan radiasi dari objek langit agar dapat diamati atau dianalisis",
+"Membuat objek langit lebih dekat secara fisik",
+"Mengubah orbit planet",
+"Menghentikan cahaya"
+],
+[
+"Mengapa teleskop luar angkasa dapat memberikan keuntungan dibandingkan teleskop optik di permukaan Bumi?",
+"Tidak terganggu oleh sebagian besar efek atmosfer Bumi",
+"Karena memiliki gravitasi lebih besar",
+"Karena berada lebih dekat ke Matahari",
+"Karena dapat melihat masa depan"
+],
+[
+"Apa yang dimaksud dengan aperture teleskop?",
+"Diameter efektif bukaan utama yang mengumpulkan cahaya",
+"Panjang kabel teleskop",
+"Berat teleskop",
+"Kecepatan rotasi teleskop"
+],
+[
+"Jika diameter aperture teleskop diperbesar, salah satu keuntungan utamanya adalah...",
+"Kemampuan mengumpulkan cahaya meningkat",
+"Objek menjadi lebih dekat secara fisik",
+"Massa planet berubah",
+"Waktu menjadi lebih cepat"
+],
+[
+"Apa yang dimaksud dengan resolusi angular teleskop?",
+"Kemampuan membedakan dua objek yang tampak sangat berdekatan di langit",
+"Kemampuan mengukur berat bintang",
+"Kemampuan menghitung jumlah planet",
+"Kemampuan mengubah warna objek"
+],
+[
+"Mengapa astronomi modern membutuhkan komputer dan analisis data?",
+"Karena observatorium menghasilkan data dalam jumlah besar yang perlu diproses dan dianalisis",
+"Karena komputer dapat mengubah hukum fisika",
+"Karena teleskop tidak menghasilkan data",
+"Karena semua pengamatan dilakukan tanpa instrumen"
+],
+[
+"Apa tujuan utama kalibrasi instrumen astronomi?",
+"Memastikan pengukuran instrumen dapat dikaitkan dengan nilai yang benar dan dapat dipercaya",
+"Mengubah objek langit",
+"Memperbesar galaksi",
+"Menghapus seluruh noise secara otomatis"
+],
+[
+"Jika dua bintang memiliki luminositas intrinsik sama tetapi salah satunya lebih jauh dari Bumi, bintang yang lebih jauh akan...",
+"Tampak lebih redup",
+"Tampak lebih terang",
+"Memiliki massa lebih kecil secara otomatis",
+"Berubah menjadi planet"
+]
+];
+
+function shuffle(array){
+const arr=[...array];
+for(let i=arr.length-1;i>0;i--){
+const j=Math.floor(Math.random()*(i+1));
+[arr[i],arr[j]]=[arr[j],arr[i]];
+}
+return arr;
+}
+
+function startExam(index){
+
+if(index!==0)return;
+
+if(state.rank!==1){
+toast("Ujian Rank 1 sudah tidak tersedia untuk akun ini.");
+return;
+}
+
+const randomizedQuestions=shuffle(QUESTIONS);
+
+$("examTitle").textContent="Ujian Rank 1 → Rank 2";
+
+$("examDescription").textContent=
+"Astronomy Foundation • 40 soal • Minimal nilai 75";
+
+$("examContent").innerHTML=`
+<form id="examForm">
+
+${randomizedQuestions.map((question,i)=>{
+
+const correctAnswer=question[1];
+const options=shuffle(question.slice(1));
+
+return `
+<div class="question">
+<h4>${i+1}. ${question[0]}</h4>
+
+<div class="options">
+${options.map(option=>`
+<label>
+<input type="radio"
+name="q${i}"
+value="${encodeURIComponent(option)}"
+data-correct="${option===correctAnswer}"
+required>
+${option}
+</label>
+`).join("")}
+</div>
+</div>
+`;
+
+}).join("")}
+
+<button class="btn primary" style="width:100%">
+<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M14 3c3 1 5.5 3.5 6.5 6.5-3.5 1-7 3-9.5 5.5L7 12c2.5-2.5 4.5-6 7-9Z'/><circle cx='15' cy='9' r='1.2'/><path d='M9.5 15 6 18.5M7 13l-3 1 1-3M11 17l-1 3-3 1'/></svg> Kirim Jawaban
+</button>
+
+</form>
+`;
+
+$("examModal").classList.add("show");
+
+$("examForm").onsubmit=e=>{
+e.preventDefault();
+gradeExam();
+};
+}
+
+function gradeExam(){
+
+const questions=document.querySelectorAll(".question");
+let correct=0;
+
+questions.forEach(question=>{
+
+const answer=question.querySelector("input:checked");
+
+if(answer&&answer.dataset.correct==="true"){
+correct++;
+}
+
+});
+
+const total=questions.length;
+const score=Math.round(correct/total*100);
+const passed=score>=75;
+
+state.scores.push(score);
+
+if(!state.achievements.includes(2)){
+state.achievements.push(2);
+}
+
+if(passed){
+
+if(!state.passed.includes(1)){
+state.passed.push(1);
+}
+
+state.rank=2;
+state.xp+=RANKS[1].xp;
+
+if(!state.achievements.includes(3)){
+state.achievements.push(3);
+}
+
+if(score===100&&!state.achievements.includes(10)){
+state.achievements.push(10);
+}
+}
+
+save();
+
+$("examContent").innerHTML=`
+<div class="result">
+<div style="font-size:45px">${passed?"<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M4 20 14 4'/><path d='M3 9l3 1M7 5l1 3M12 3l1 2.5M17 7l2 1'/><circle cx='18' cy='15' r='1'/><circle cx='15' cy='19' r='1'/><circle cx='20' cy='19' r='1'/></svg>":"<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4 5.5A2.5 2.5 0 0 1 6.5 3H12v18H6.5A2.5 2.5 0 0 1 4 18.5v-13Z'/><path d='M12 3h5.5A2.5 2.5 0 0 1 20 5.5v13a2.5 2.5 0 0 1-2.5 2.5H12'/></svg>"}</div>
+<h2>${passed?"UJIAN LULUS!":"BELUM LULUS"}</h2>
+<div class="score">${score}</div>
+
+<p class="muted">
+Benar: ${correct}/${total} soal
+<br><br>
+${passed
+?"Selamat! Kamu naik ke Rank 2 — Observer."
+:"Nilai belum mencapai 75. Pelajari materi dan coba lagi."
+}
+</p>
+
+<button class="btn primary" style="margin-top:15px"
+onclick="closeExam()">Tutup</button>
+</div>
+`;
+}
+
+function closeExam(){
+$("examModal").classList.remove("show");
+render();
+}
+
+function renderSettings(){
+
+$("setName").value=state.name;
+$("setUsername").value=state.username;
+$("setBio").value=state.bio;
+$("setLanguage").value=state.language;
+$("setTheme").value=state.theme;
+$("setNotification").value=state.notification;
+$("setAnimation").value=state.animation;
+
+}
+
+let firstAvatarData="";
+
+$("firstAvatar").addEventListener("change",function(){
+
+const file=this.files[0];
+if(!file)return;
+
+if(!file.type.startsWith("image/")){
+toast("File harus berupa gambar.");
+return;
+}
+
+const reader=new FileReader();
+
+reader.onload=e=>{
+firstAvatarData=e.target.result;
+$("firstPreview").src=firstAvatarData;
+};
+
+reader.readAsDataURL(file);
+});
+
+function finishFirstLogin(){
+
+const name=$("firstName").value.trim();
+
+if(!name){
+toast("Masukkan nama terlebih dahulu.");
+return;
+}
+
+if(!firstAvatarData){
+toast("Pilih foto profil terlebih dahulu.");
+return;
+}
+
+state.name=name;
+state.avatar=firstAvatarData;
+state.username="@"+name.toLowerCase().replace(/\s+/g,"");
+
+save();
+
+$("loginScreen").style.display="none";
+
+toast("Selamat datang di Astronomy TEC");
+}
+
+$("settingsAvatar").addEventListener("change",function(){
+
+const file=this.files[0];
+if(!file)return;
+
+const reader=new FileReader();
+
+reader.onload=e=>{
+state.avatar=e.target.result;
+save();
+toast("Foto profil berhasil diganti");
+};
+
+reader.readAsDataURL(file);
+});
+
+$("settingsCover").addEventListener("change",function(){
+
+const file=this.files[0];
+if(!file)return;
+
+if(!file.type.startsWith("image/")){
+toast("File harus berupa foto.");
+return;
+}
+
+const reader=new FileReader();
+
+reader.onload=e=>{
+state.cover=e.target.result;
+save();
+toast("Background foto website berhasil diganti");
+};
+
+reader.readAsDataURL(file);
+});
+
+function removeSiteBackground(){
+
+state.cover="";
+
+$("settingsCover").value="";
+
+save();
+
+toast("Background website dikembalikan ke default");
+}
+
+function saveSettings(){
+
+state.name=$("setName").value.trim()||"ABHIZAN";
+state.username=$("setUsername").value.trim()||"@member";
+state.bio=$("setBio").value.trim()||"Member Astronomy TEC";
+state.language=$("setLanguage").value;
+state.theme=$("setTheme").value;
+state.notification=$("setNotification").value;
+state.animation=$("setAnimation").value;
+
+save();
+
+toast("Pengaturan berhasil disimpan");
+}
+
+function unlockMaster(){
+
+const code=$("masterCode").value;
+
+if(code===MASTER_CODE){
+
+state.master=true;
+state.premium=true;
+
+save();
+
+showPage("master");
+
+$("masterCode").value="";
+
+toast("MASTER ACCESS berhasil diverifikasi");
+
+}else{
+
+toast("Kode Owner / Master salah.");
+
+}
+}
+
+function showPremiumPayment(){
+$("premiumModal").classList.add("show");
+}
+
+function closePremium(){
+$("premiumModal").classList.remove("show");
+}
+
+function activatePremium(){
+
+const code=$("premiumCode").value.trim();
+
+if(!code){
+toast("Masukkan kode Premium.");
+return;
+}
+
+const usedCodes=
+JSON.parse(localStorage.getItem("ASTRONOMY_TEC_USED_CODES"))||[];
+
+if(usedCodes.includes(code)){
+toast("Kode Premium sudah digunakan.");
+return;
+}
+
+if(!PREMIUM_CODES.includes(code)){
+toast("Kode Premium tidak valid.");
+return;
+}
+
+state.premium=true;
+state.premiumCode=code;
+state.premiumActivatedAt=new Date().toISOString();
+
+usedCodes.push(code);
+
+localStorage.setItem(
+"ASTRONOMY_TEC_USED_CODES",
+JSON.stringify(usedCodes)
+);
+
+save();
+
+$("premiumCode").value="";
+closePremium();
+
+toast("Premium Member berhasil diaktifkan");
+}
+
+function resetData(){
+
+if(confirm("Hapus semua data Astronomy TEC?")){
+
+localStorage.removeItem("ASTRONOMY_TEC_DATA");
+localStorage.removeItem("ASTRONOMY_TEC_USED_CODES");
+
+location.reload();
+
+}
+}
+
+const CS_WA_NUMBER="6285722567019";
+
+const CS_FAQ=[
+{
+keys:["premium","upgrade","aktivasi","kode premium"],
+answer:"Untuk aktivasi Premium, buka menu Premium, lakukan pembayaran, lalu masukkan kode Premium yang dikirim Admin. Kalau kode belum diterima, kamu bisa langsung chat CS Ziurixy Official ya."
+},
+{
+keys:["ujian","exam","rank","naik rank","kenaikan"],
+answer:"Ujian kenaikan rank ada di menu Ujian. Saat ini ujian Rank 1 → Rank 2 sudah tersedia, sedangkan ujian selanjutnya statusnya Segera Hadir dan masih disiapkan Admin."
+},
+{
+keys:["master","owner","kode master"],
+answer:"Akses Master/Owner hanya untuk pengelola resmi Astronomy TEC. Kalau kamu merasa berhak dapat akses ini, silakan hubungi CS Ziurixy Official untuk verifikasi."
+},
+{
+keys:["reset","hapus data","hilang","data hilang"],
+answer:"Data progress kamu tersimpan di browser (localStorage). Kalau kamu reset data atau ganti perangkat, progress akan hilang dan mulai dari awal lagi. Pastikan pakai browser & device yang sama ya."
+},
+{
+keys:["background","foto profil","cover"],
+answer:"Kamu bisa ganti background website dan foto profil lewat menu Pengaturan. Ada juga tombol Hapus Background kalau mau balik ke tampilan default."
+},
+{
+keys:["academy","materi","belajar"],
+answer:"Materi pembelajaran ada di menu Academy, mulai dari dasar astronomi sampai astroinformatics. Selesaikan materi untuk dapat XP tambahan."
+},
+{
+keys:["lambat","lag","berat","nge-lag","ngelag","loading lama"],
+answer:"Kalau website berasa berat/lag, coba matikan Animasi di menu Pengaturan, tutup tab lain yang berat, atau pastikan koneksi internet stabil. HP dengan RAM kecil kadang butuh waktu lebih buat memuat gambar besar."
+},
+{
+keys:["progress hilang","kehapus","ilang sendiri","data ilang"],
+answer:"Progress kamu tersimpan di localStorage browser, bukan di server. Kalau kamu bersihkan cache/data browser, ganti device, atau pakai mode incognito, progress otomatis hilang dan nggak bisa dibalikin lagi."
+},
+{
+keys:["kode premium tidak valid","kode salah","sudah digunakan","kode invalid","kode ditolak"],
+answer:"Kode Premium cuma bisa dipakai sekali dan harus persis (termasuk huruf besar/kecil). Kalau kode kamu ditolak terus padahal baru, kemungkinan ada typo atau kode itu bukan buat kamu — langsung chat CS Ziurixy Official ya."
+},
+{
+keys:["stuck loading","loading terus","gak kebuka","tidak bisa masuk","macet"],
+answer:"Kalau macet di layar loading, coba refresh halaman dan pastikan koneksi internet stabil saat gambar/logo dimuat pertama kali."
+},
+{
+keys:["upload gagal","foto gak masuk","gagal upload","tidak bisa upload"],
+answer:"Pastikan file yang diupload benar-benar format foto (JPG/PNG/WEBP) dan ukurannya nggak kegedean, karena semua foto disimpan sebagai teks di browser (base64) yang ada batasnya."
+},
+{
+keys:["sertifikat","belum ada sertifikat","certificate"],
+answer:"Sertifikat baru muncul setelah kamu menyelesaikan semua rank sampai TEC Senior. Kalau baru lulus 1-2 ujian, sertifikatnya memang masih kosong — itu normal."
+},
+{
+keys:["soal random","urutan soal","jawaban beda","soal ujian"],
+answer:"Soal dan pilihan jawaban memang diacak ulang setiap ujian dimulai biar nggak mudah dihafal urutannya, tapi jawaban yang benar tetap sama kok."
+},
+{
+keys:["mau ulang","reset rank","ulang dari awal","turun rank"],
+answer:"Untuk reset semua progress ke awal, buka Pengaturan → Data Browser → Hapus Semua Data. Ingat, aksi ini nggak bisa dibatalkan."
+},
+{
+keys:["ganti nama","ganti username","ubah nama","ubah username"],
+answer:"Nama dan username bisa diganti lewat menu Pengaturan → Profil, isi kolom yang mau diubah, lalu klik Simpan Pengaturan."
+},
+{
+keys:["notifikasi","animasi tidak berfungsi","gak ngaruh","tidak berfungsi"],
+answer:"Pengaturan Notifikasi dan Animasi saat ini masih versi dasar, jadi efeknya terbatas. Kalau kamu punya request pengembangan fitur ini, sampaikan ke CS Ziurixy Official ya."
+},
+{
+keys:["video background","background video"],
+answer:"Saat ini background website cuma mendukung foto, video belum didukung supaya website tetap ringan di berbagai HP."
+},
+{
+keys:["hp kentang","spek rendah","hp jadul","lemot"],
+answer:"Astronomy TEC dirancang seringan mungkin. Kalau HP kamu tetap berat, coba matikan Animasi dan hindari upload foto beresolusi terlalu besar."
+},
+{
+keys:["gagal login","tidak bisa masuk pertama kali","gagal masuk"],
+answer:"Saat pertama masuk, pastikan kamu isi Nama dan pilih Foto Profil dulu sebelum menekan tombol Masuk Astronomy TEC — dua data itu wajib diisi."
+}
+];
+
+let csAskedHuman=false;
+
+function csAddMessage(text,sender){
+
+const log=$("csChatLog");
+
+const bubble=document.createElement("div");
+bubble.className="chat-msg "+sender;
+bubble.innerHTML=text;
+
+log.appendChild(bubble);
+log.scrollTop=log.scrollHeight;
+}
+
+function csRenderQuickReplies(){
+
+const quick=$("csQuickReplies");
+
+quick.innerHTML=`
+<button onclick="csQuickReply('Cara aktivasi Premium')">💎 Cara Premium</button>
+<button onclick="csQuickReply('Cara ujian naik rank')">📝 Cara Ujian</button>
+<button onclick="csQuickReply('Cara ganti background')">🖼️ Ganti Background</button>
+<button onclick="csHumanHandoff()">Chat CS Ziurixy Official</button>
+`;
+}
+
+function csFindAnswer(text){
+
+const lower=text.toLowerCase();
+
+for(const item of CS_FAQ){
+if(item.keys.some(key=>lower.includes(key))){
+return item.answer;
+}
+}
+
+return null;
+}
+
+function csQuickReply(text){
+$("csInput").value=text;
+sendCSMessage();
+}
+
+const CS_WA_ICON="<svg class='ic' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='6' width='18' height='12' rx='1.5'/><path d='M3 10h18'/><path d='M6 14h4'/></svg>";
+
+function csGetUsername(){
+return state.username||("@"+(state.name||"member").toLowerCase().replace(/\s+/g,""));
+}
+
+function csHumanHandoff(){
+
+csAddMessage("Chat CS Ziurixy Official","user");
+
+setTimeout(()=>{
+csAddMessage(
+"Mau lewat mana nih? Isi formulir dulu biar laporan kamu lengkap (masalah/saran + bukti foto/video), atau langsung chat WhatsApp kalau buru-buru."+
+`<div class="chat-quick" style="margin-top:10px">`+
+`<button onclick="csShowForm()">📝 Isi Formulir</button>`+
+`<button onclick="csDirectWA()">💬 Langsung WhatsApp</button>`+
+`</div>`,
+"bot"
+);
+},400);
+}
+
+function csDirectWA(){
+
+csAddMessage("Langsung WhatsApp","user");
+
+setTimeout(()=>{
+csAddMessage(
+"Oke, klik tombol ini buat lanjut chat CS Ziurixy Official di WhatsApp:"+
+`<br><a class="cs-wa-btn" href="https://wa.me/${CS_WA_NUMBER}" target="_blank">${CS_WA_ICON} Chat CS Ziurixy Official</a>`,
+"bot"
+);
+},350);
+}
+
+function csShowForm(){
+
+csAddMessage("Isi Formulir","user");
+
+setTimeout(()=>{
+
+const formHtml=`
+<div class="cs-form" id="csFormBox">
+<label style="font-size:10px;color:#8ca2c0">Jenis Laporan</label>
+<select id="csFormType">
+<option value="Masalah">Masalah / Kendala</option>
+<option value="Saran">Saran / Masukan</option>
+</select>
+<label style="font-size:10px;color:#8ca2c0">Ceritakan detailnya</label>
+<textarea id="csFormDesc" placeholder="Jelaskan masalah atau saran kamu di sini..."></textarea>
+<label style="font-size:10px;color:#8ca2c0">Bukti Foto/Video (opsional)</label>
+<input type="file" id="csFormFile" accept="image/*,video/*">
+<div id="csFormPreview"></div>
+<label style="font-size:10px;color:#8ca2c0">Dikirim oleh</label>
+<input type="text" value="${csGetUsername()}" disabled>
+<button class="btn primary" style="width:100%;margin-top:6px" onclick="csSubmitForm()">Kirim Laporan</button>
+</div>
+`;
+
+csAddMessage(formHtml,"bot");
+
+$("csFormFile").addEventListener("change",csFormFilePreview);
+
+},350);
+}
+
+function csFormFilePreview(e){
+
+const file=e.target.files[0];
+if(!file)return;
+
+const isVideo=file.type.startsWith("video/");
+const isImage=file.type.startsWith("image/");
+
+if(!isVideo&&!isImage){
+toast("File harus berupa foto atau video.");
+return;
+}
+
+const reader=new FileReader();
+
+reader.onload=ev=>{
+
+const url=ev.target.result;
+const box=$("csFormPreview");
+
+box.innerHTML=isVideo
+?`<video controls src="${url}"></video>`
+:`<img src="${url}">`;
+
+box.dataset.file=url;
+box.dataset.type=isVideo?"video":"image";
+};
+
+reader.readAsDataURL(file);
+}
+
+function csSubmitForm(){
+
+const type=$("csFormType").value;
+const desc=$("csFormDesc").value.trim();
+
+if(!desc){
+toast("Isi keterangan dulu ya.");
+return;
+}
+
+const box=$("csFormPreview");
+const fileUrl=box?box.dataset.file:null;
+const fileType=box?box.dataset.type:null;
+
+csAddMessage("<b>"+type+"</b><br>"+desc,"user");
+
+if(fileUrl){
+csAddMessage(
+fileType==="video"
+?`<video controls src="${fileUrl}"></video>`
+:`<img src="${fileUrl}">`,
+"user"
+);
+}
+
+setTimeout(()=>{
+
+const waText=encodeURIComponent(
+"Halo CS Ziurixy, saya "+csGetUsername()+" dari Astronomy TEC.\n"+
+"Jenis: "+type+"\n"+
+"Keterangan: "+desc+
+(fileUrl?"\n(Ada lampiran foto/video, mohon dikirim ulang manual di chat WA ya, karena link WA nggak bisa bawa file otomatis)":"")
+);
+
+csAddMessage(
+"Laporan kamu udah aku catat! Klik tombol ini buat lanjut ke CS Ziurixy Official di WhatsApp"+
+(fileUrl?" (jangan lupa kirim ulang foto/videonya di sana ya):":"") +
+`<br><a class="cs-wa-btn" href="https://wa.me/${CS_WA_NUMBER}?text=${waText}" target="_blank">${CS_WA_ICON} Lanjut ke WhatsApp</a>`,
+"bot"
+);
+
+},500);
+}
+
+function csTriggerAttach(){
+$("csAttachInput").click();
+}
+
+$("csAttachInput").addEventListener("change",function(){
+
+const file=this.files[0];
+if(!file)return;
+
+const isVideo=file.type.startsWith("video/");
+const isImage=file.type.startsWith("image/");
+
+if(!isVideo&&!isImage){
+toast("File harus berupa foto atau video.");
+this.value="";
+return;
+}
+
+const reader=new FileReader();
+
+reader.onload=e=>{
+
+const url=e.target.result;
+
+csAddMessage(
+isVideo?`<video controls src="${url}"></video>`:`<img src="${url}">`,
+"user"
+);
+
+setTimeout(()=>{
+csAddMessage(
+"Makasih, lampirannya udah aku terima. Kalau perlu ditindaklanjuti manusia, klik \"Chat CS Ziurixy Official\" di menu topik ya.",
+"bot"
+);
+},400);
+};
+
+reader.readAsDataURL(file);
+this.value="";
+});
+
+let csMediaRecorder=null;
+let csRecordedChunks=[];
+let csRecording=false;
+
+async function csToggleRecording(){
+
+if(csRecording){
+
+csMediaRecorder.stop();
+csRecording=false;
+$("csMicBtn").classList.remove("recording");
+$("csWave").style.display="none";
+$("csMicIcon").style.display="inline-flex";
+return;
+}
+
+if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+toast("Rekam suara nggak didukung di browser/koneksi ini.");
+return;
+}
+
+try{
+
+const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+
+csMediaRecorder=new MediaRecorder(stream);
+csRecordedChunks=[];
+
+csMediaRecorder.ondataavailable=e=>{
+if(e.data.size>0)csRecordedChunks.push(e.data);
+};
+
+csMediaRecorder.onstop=()=>{
+
+const blob=new Blob(csRecordedChunks,{type:"audio/webm"});
+const url=URL.createObjectURL(blob);
+
+csAddMessage(`<audio controls src="${url}"></audio>`,"user");
+
+stream.getTracks().forEach(t=>t.stop());
+
+setTimeout(()=>{
+csAddMessage(
+"Pesan suara kamu udah aku terima. Untuk respon lebih detail, klik \"Chat CS Ziurixy Official\" ya.",
+"bot"
+);
+},400);
+};
+
+csMediaRecorder.start();
+csRecording=true;
+
+$("csMicBtn").classList.add("recording");
+$("csMicIcon").style.display="none";
+$("csWave").style.display="inline-flex";
+
+}catch(err){
+toast("Izin mikrofon ditolak atau tidak tersedia di browser ini.");
+}
+}
+
+function sendCSMessage(){
+
+const input=$("csInput");
+const text=input.value.trim();
+
+if(!text)return;
+
+csAddMessage(text,"user");
+input.value="";
+
+setTimeout(()=>{
+
+const answer=csFindAnswer(text);
+
+if(answer){
+csAddMessage(answer,"bot");
+}else{
+csAddMessage(
+"Maaf, aku belum nemu jawaban pasti buat itu 🙏 Coba pilih topik di bawah, atau langsung chat CS Ziurixy Official buat dibantu manusia.",
+"bot"
+);
+}
+
+},450);
+}
+
+function openCS(){
+
+$("csModal").classList.add("show");
+
+if(!$("csChatLog").children.length){
+
+csAddMessage(
+"Halo! Aku Ziurixy, chatbot Customer Service Astronomy TEC 🚀 Ada yang bisa aku bantu seputar Premium, Ujian, Academy, atau Pengaturan?",
+"bot"
+);
+
+csRenderQuickReplies();
+}
+}
+
+function closeCS(){
+$("csModal").classList.remove("show");
+}
+
+$("csInput").addEventListener("keydown",function(e){
+if(e.key==="Enter"){
+sendCSMessage();
+}
+});
+
+function toast(message){
+
+const toastBox=$("toast");
+
+toastBox.textContent=message;
+toastBox.classList.add("show");
+
+setTimeout(()=>{
+toastBox.classList.remove("show");
+},2300);
+
+}
+
+function csHideLoadingScreen(){
+
+const loadingEl=$("loading");
+if(loadingEl)loadingEl.classList.add("hide");
+
+if(!state.name){
+const loginEl=$("loginScreen");
+if(loginEl)loginEl.style.display="flex";
+}
+}
+
+try{
+render();
+}catch(err){
+console.error("Gagal render tampilan awal:",err);
+}
+
+setTimeout(csHideLoadingScreen,2800);
+
+setTimeout(csHideLoadingScreen,6000);
+
+</script>
+</body>
+</html>
